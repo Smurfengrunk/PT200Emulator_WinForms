@@ -1,11 +1,14 @@
-﻿using PT200Emulator_WinForms.Engine;
-using PT200_Logging;
+﻿using PT200_Logging;
 using PT200_Parser;
 using PT200_Rendering;
 using PT200Emulator_WinForms.Controls;
+using PT200Emulator_WinForms.Engine;
 using Serilog;
-using System.Windows.Forms;
+using Serilog.Core;
 using Serilog.Events;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using static System.Windows.Forms.AxHost;
 
 namespace PT200Emulator_WinForms
 {
@@ -18,10 +21,13 @@ namespace PT200Emulator_WinForms
         private TerminalCtrl terminalCtrl;
         private CancellationTokenSource _cts = new();
         private static TerminalState terminalState = new TerminalState();
+        private readonly LoggingLevelSwitch _levelSwitch;
 
-        public PT200()
+        public PT200(LoggingLevelSwitch levelSwitch)
         {
             InitializeComponent();
+            _levelSwitch = levelSwitch;
+
             rbGreen.ForeColor = Color.LimeGreen;
             rbAmber.ForeColor = Color.DarkOrange;
             rbWhite.ForeColor = Color.White;
@@ -41,29 +47,28 @@ namespace PT200Emulator_WinForms
             capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
             scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
             insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Green : statusLine.BackColor;
-            Log.Logger = CreateLogger();
+            //Log.Logger = CreateLogger();
             statusController = new StatusLineController(logLabel, onlineLabel, systemLabel, dsrLabel, g0g1Label, statusLine);
             statusController.SetOnline(false);
             statusController.SetSystemReady(false);
             statusController.SetDsr(false);
             statusController.SetCharset(false);
+            Program.logForm.Show();
 
             InitStatusTimers();
-            this.LogDebug("Status timers initialized.");
-            InitTerminal();
-            this.LogDebug("Initializing Terminal Control...");
 
-            terminalCtrl = new TerminalCtrl(_parser.Screenbuffer)
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Black
-            };
+            terminalCtrl = new TerminalCtrl();
+            terminalCtrl.SuspendLayout();
+            terminalCtrl.BackColor = Color.Black;
+            terminalCtrl.Dock = DockStyle.None;
             TerminalPanel.Controls.Add(terminalCtrl);
-            terminalCtrl.AttachBuffer(_parser.Screenbuffer);
-            //terminalCtrl.Size = CalculateTerminalSize(80, 24);
+            this.LogDebug("Calculated terminal size: {Size}", terminalCtrl.Size);
             this.ClientSize = CalculateTerminalSize(80, 24 + 1); // extra rad för statusfält
+            this.LogDebug("Set MainForm client size to: {Size}", this.ClientSize);
             terminalCtrl.Focus();
             this.LogDebug("Terminal Control initialized and buffer attached.");
+            _transport = new Transport(statusController, terminalCtrl);
+            _parser = _transport.GetParser();
 
             statusLine.BackColor = terminalCtrl.ForeColor;
             statusLine.Renderer = new ToolStripProfessionalRenderer(new ProfessionalColorTable
@@ -83,21 +88,33 @@ namespace PT200Emulator_WinForms
                 }
             };
             statusLine.Dock = DockStyle.Bottom;
-            terminalCtrl.Dock = DockStyle.Fill;
+            terminalCtrl.Size = CalculateTerminalSize(80, 24);
+            terminalCtrl.Anchor = AnchorStyles.None;
+            terminalCtrl.Dock = DockStyle.None;
+            TerminalPanel.ResumeLayout(true);
+            terminalCtrl.ResumeLayout(true);
 
             this.KeyPreview = true;
             this.KeyUp += MainForm_KeyUp;
             this.LogDebug("MainForm KeyUp event handler attached.");
 
-            ScreenFormatCombo.DataSource = Enum.GetValues(typeof(TerminalState.ScreenFormat));
+            var formats = Enum.GetValues(typeof(TerminalState.ScreenFormat))
+                              .Cast<TerminalState.ScreenFormat>()
+                              .Select(f => new { Format = f, Name = EnumHelper.GetDescription(f) })
+                              .ToList();
+
+            ScreenFormatCombo.DisplayMember = "Name";
+            ScreenFormatCombo.ValueMember = "Format";
+            ScreenFormatCombo.DataSource = formats;
+            ScreenFormatCombo.SelectedValue = terminalState.screenFormat;
             LogLevelCombo.DataSource = Enum.GetValues(typeof(Serilog.Events.LogEventLevel));
             LogLevelCombo.SelectedIndex = 1;
+            _levelSwitch = levelSwitch;
         }
 
         private Size CalculateTerminalSize(int cols, int rows)
         {
-            using var g = terminalCtrl.CreateGraphics();
-            SizeF charSize = g.MeasureString("W", terminalCtrl.Font);
+            SizeF charSize = TextRenderer.MeasureText("W", terminalCtrl.Font);
             int terminalWidth = (int)Math.Ceiling((charSize.Width * cols));
             int terminalHeight = (int)Math.Ceiling((charSize.Height * rows));
             //this.ClientSize = new Size(terminalWidth + SidePanel.Width, terminalHeight + statusLine.Height);
@@ -132,28 +149,41 @@ namespace PT200Emulator_WinForms
 
         private void ScreenFormatCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ScreenFormatCombo.SelectedItem is TerminalState.ScreenFormat format)
+            if (ScreenFormatCombo.SelectedValue is TerminalState.ScreenFormat format)
             {
                 terminalState.screenFormat = format;
                 terminalState.SetScreenFormat();
-                terminalCtrl.Resize(_parser.Screenbuffer.Cols, _parser.Screenbuffer.Rows);
-                this.ClientSize = new Size(terminalCtrl.Width, terminalCtrl.Height + statusLine.Height);
-                this.LogDebug($"Screen format changed to {format}, resized terminal to {terminalCtrl.Size}.");
+                terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
             }
         }
 
         private void LogLevelCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (LogLevelCombo.SelectedItem is Serilog.Events.LogEventLevel level)
+            switch (LogLevelCombo.SelectedItem.ToString())
             {
-                Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Is(level)
-                    .WriteTo.Debug()
-                    .CreateLogger();
-                this.LogDebug($"Log level changed to {level}.");
-                statusController.SetLogLevel(level.ToString());
+                case "Verbose":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
+                    break;
+                case "Debug":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Debug;
+                    break;
+                case "Information":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Information;
+                    break;
+                case "Warning":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Warning;
+                    break;
+                case "Error":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Error;
+                    break;
+                case "Fatal":
+                    _levelSwitch.MinimumLevel = LogEventLevel.Fatal;
+                    break;
             }
+
+            this.LogDebug($"Log level changed to {_levelSwitch.MinimumLevel}");
         }
+
 
         private void rePaint(Color textColor)
         {
@@ -201,27 +231,36 @@ namespace PT200Emulator_WinForms
                 }
             }
         }
-        private ILogger CreateLogger()
-        {
-            return new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Debug()
-                .CreateLogger();
-        }
-
-        private void InitTerminal()
-        {
-            _transport = new Transport(statusController);
-            _parser = _transport.GetParser();
-            //_renderer = new RenderCore();
-            //_input = new Input();
-        }
 
         protected override async void OnLoad(EventArgs e)
         {
             this.LogDebug("Form loaded, starting transport connection...");
             base.OnLoad(e);
             await _transport.Connect(_cts.Token);
+        }
+
+        private void DiagButton_Click(object sender, EventArgs e)
+        {
+            terminalCtrl.ShowDiagnosticOverlay = !terminalCtrl.ShowDiagnosticOverlay;
+            terminalCtrl.ForceRepaint();
+        }
+
+        public void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            _cts.Cancel();
+            Log.CloseAndFlush();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            this.LogDebug("Form loaded, starting transport connection...");
+            terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
+        }
+
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            this.LogDebug("Button clicked at {Time}", DateTime.Now);
+
         }
     }
 

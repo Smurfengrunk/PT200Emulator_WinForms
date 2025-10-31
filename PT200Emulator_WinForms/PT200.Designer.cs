@@ -31,6 +31,9 @@ namespace PT200Emulator_WinForms
         private void InitializeComponent()
         {
             SidePanel = new Panel();
+            DiagButton = new Button();
+            DisconnectButton = new Button();
+            ConnectButton = new Button();
             PortTextBox = new TextBox();
             HostTextBox = new TextBox();
             LogLevelCombo = new ComboBox();
@@ -44,6 +47,7 @@ namespace PT200Emulator_WinForms
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             statusLine = new StatusStrip();
             messageLabel = new ToolStripStatusLabel();
+            logLabel = new ToolStripStatusLabel();
             onlineLabel = new ToolStripStatusLabel();
             dsrLabel = new ToolStripStatusLabel();
             systemLabel = new ToolStripStatusLabel();
@@ -53,7 +57,6 @@ namespace PT200Emulator_WinForms
             capsLockLabel = new ToolStripStatusLabel();
             numLockLabel = new ToolStripStatusLabel();
             clockLabel = new ToolStripStatusLabel();
-            logLabel = new ToolStripStatusLabel();
             TerminalPanel = new Panel();
             SidePanel.SuspendLayout();
             rbPanel.SuspendLayout();
@@ -67,6 +70,9 @@ namespace PT200Emulator_WinForms
             SidePanel.BackColor = Color.DarkGray;
             SidePanel.BorderStyle = BorderStyle.Fixed3D;
             SidePanel.CausesValidation = false;
+            SidePanel.Controls.Add(DiagButton);
+            SidePanel.Controls.Add(DisconnectButton);
+            SidePanel.Controls.Add(ConnectButton);
             SidePanel.Controls.Add(PortTextBox);
             SidePanel.Controls.Add(HostTextBox);
             SidePanel.Controls.Add(LogLevelCombo);
@@ -74,9 +80,39 @@ namespace PT200Emulator_WinForms
             SidePanel.Controls.Add(rbPanel);
             SidePanel.Dock = DockStyle.Left;
             SidePanel.Location = new Point(0, 0);
+            SidePanel.MinimumSize = new Size(175, 450);
             SidePanel.Name = "SidePanel";
             SidePanel.Size = new Size(175, 450);
             SidePanel.TabIndex = 2;
+            // 
+            // DiagButton
+            // 
+            DiagButton.Location = new Point(10, 346);
+            DiagButton.Name = "DiagButton";
+            DiagButton.Size = new Size(100, 23);
+            DiagButton.TabIndex = 12;
+            DiagButton.Text = "Diag overlay";
+            DiagButton.UseVisualStyleBackColor = true;
+            DiagButton.Click += DiagButton_Click;
+            // 
+            // DisconnectButton
+            // 
+            DisconnectButton.Location = new Point(9, 292);
+            DisconnectButton.Name = "DisconnectButton";
+            DisconnectButton.Size = new Size(75, 23);
+            DisconnectButton.TabIndex = 11;
+            DisconnectButton.Text = "Disconnect";
+            DisconnectButton.UseVisualStyleBackColor = true;
+            // 
+            // ConnectButton
+            // 
+            ConnectButton.Location = new Point(9, 263);
+            ConnectButton.Name = "ConnectButton";
+            ConnectButton.Size = new Size(75, 23);
+            ConnectButton.TabIndex = 10;
+            ConnectButton.Text = "Connect";
+            ConnectButton.UseVisualStyleBackColor = true;
+            ConnectButton.Click += ConnectButton_Click;
             // 
             // PortTextBox
             // 
@@ -204,18 +240,24 @@ namespace PT200Emulator_WinForms
             statusLine.BackColor = Color.Transparent;
             statusLine.Font = new Font("Consolas", 10F);
             statusLine.Items.AddRange(new ToolStripItem[] { messageLabel, logLabel, onlineLabel, dsrLabel, systemLabel, g0g1Label, scrollLockLabel, insertLabel, capsLockLabel, numLockLabel, clockLabel });
-            statusLine.Location = new Point(0, 428);
+            statusLine.Location = new Point(0, 266);
             statusLine.Name = "statusLine";
-            statusLine.Size = new Size(625, 22);
+            statusLine.Size = new Size(480, 22);
             statusLine.TabIndex = 1;
             // 
             // messageLabel
             // 
             messageLabel.Name = "messageLabel";
-            messageLabel.Size = new Size(200, 17);
+            messageLabel.Size = new Size(99, 17);
             messageLabel.Spring = true;
             messageLabel.Text = "Ready...";
             messageLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // logLabel
+            // 
+            logLabel.AutoSize = false;
+            logLabel.Name = "logLabel";
+            logLabel.Size = new Size(100, 17);
             // 
             // onlineLabel
             // 
@@ -280,44 +322,41 @@ namespace PT200Emulator_WinForms
             clockLabel.Size = new Size(58, 17);
             clockLabel.Text = "00:00";
             clockLabel.TextAlign = ContentAlignment.MiddleRight;
-            //
-            // logLabel
-            //
-            logLabel.AutoSize = false;
-            logLabel.Name = "logLabel";
-            logLabel.Size = new Size(100, 17);
-            logLabel.Text = "";
-            logLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // TerminalPanel
             // 
+            TerminalPanel.Anchor = AnchorStyles.None;
+            TerminalPanel.AutoSize = true;
+            TerminalPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             TerminalPanel.BackColor = Color.Transparent;
             TerminalPanel.Controls.Add(statusLine);
-            TerminalPanel.Dock = DockStyle.Fill;
+            TerminalPanel.Font = new Font("Consolas", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             TerminalPanel.ForeColor = SystemColors.ActiveCaptionText;
             TerminalPanel.Location = new Point(175, 0);
+            TerminalPanel.MinimumSize = new Size(480, 288);
             TerminalPanel.Name = "TerminalPanel";
-            TerminalPanel.Size = new Size(625, 450);
+            TerminalPanel.Size = new Size(480, 288);
             TerminalPanel.TabIndex = 4;
             // 
             // PT200
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ClientSize = new Size(800, 450);
             Controls.Add(TerminalPanel);
             Controls.Add(SidePanel);
             Name = "PT200";
-            Text = "Form1";
+            Text = "PT200";
             SidePanel.ResumeLayout(false);
             SidePanel.PerformLayout();
             rbPanel.ResumeLayout(false);
             rbPanel.PerformLayout();
             statusLine.ResumeLayout(false);
             statusLine.PerformLayout();
-            TerminalPanel.ResumeLayout(false);
-            TerminalPanel.PerformLayout();
+            //TerminalPanel.ResumeLayout(false);
+            //TerminalPanel.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -346,5 +385,8 @@ namespace PT200Emulator_WinForms
         private ToolStripStatusLabel clockLabel;
         private ToolStripStatusLabel logLabel;
         private Panel TerminalPanel;
+        private Button DiagButton;
+        private Button DisconnectButton;
+        private Button ConnectButton;
     }
 }

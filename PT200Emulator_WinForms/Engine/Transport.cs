@@ -1,15 +1,16 @@
 ﻿using PT200_Logging;
 using PT200_Parser;
 using PT200_Rendering;
-using PT200_rendering;
 using PT200_Transport;
 using PT200Emulator_WinForms.Controls;
+using PT200Emulator_WinForms.Engine;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PT200Emulator_WinForms.Controls.TerminalCtrl;
 using static System.Windows.Forms.AxHost;
 
 namespace PT200Emulator_WinForms.Engine
@@ -18,7 +19,7 @@ namespace PT200Emulator_WinForms.Engine
     {
         private TerminalParser _parser;
         private TerminalCtrl terminalCtrl;
-        private ICaretController _caret;
+        private WinFormsCaretController _caret;
         private TerminalState _state = new();
         private IByteStream byteStream = new PT200_Transport.TelnetByteStream();
         private DataPathProvider _basePath = new DataPathProvider(AppDomain.CurrentDomain.BaseDirectory);
@@ -27,9 +28,10 @@ namespace PT200Emulator_WinForms.Engine
         private RenderCore _renderer;
         private StatusLineController statusLine;
 
-        public Transport(StatusLineController _statusLine)
+        public Transport(StatusLineController _statusLine, TerminalCtrl _terminalCtrl)
         {
             statusLine = _statusLine;
+            terminalCtrl = _terminalCtrl;
             _state.screenFormat = TerminalState.ScreenFormat.S80x24;
             _state.SetScreenFormat();
             _caret = new WinFormsCaretController(terminalCtrl);
@@ -38,6 +40,7 @@ namespace PT200Emulator_WinForms.Engine
             _parser.DcsResponse += (bytes) => byteStream.WriteAsync(bytes);
             _parser.Screenbuffer.Scrolled += () => _renderer.ForceFullRender();
             _parser.Screenbuffer.AttachCaretController(new CaretController());
+            terminalCtrl.AttachBuffer(_parser.Screenbuffer);
 
             byteStream.Disconnected += async () =>
             {
@@ -57,9 +60,18 @@ namespace PT200Emulator_WinForms.Engine
             {
                 statusLine.SetOnline(true);
                 this.LogDebug($"Ansluten till {host}:{port}");
-                try
+                if (byteStream == null) throw new InvalidOperationException("byteStream is null in Connect");
+                 try
                 {
-                    byteStream.DataReceived += bytes => _parser.Feed(bytes);
+                    byteStream.DataReceived += bytes =>
+                    {
+                        var parser = _parser ?? throw new InvalidOperationException("_parser is null when handling data");
+                        this.LogErr($"Registrerar mottagningshanterare. byteStream: {byteStream}, parser: {_parser}, bytes: {bytes} längd {bytes.Length}");
+                        this.LogErr($"Screenbuffer: {parser.Screenbuffer}, Size {parser.Screenbuffer.Cols}x{parser.Screenbuffer.Rows}");
+                        this.LogDebug($"Mottagna data: {BitConverter.ToString(bytes)}");
+
+                        parser.Feed(bytes);
+                    };
                 }
                 catch (Exception ex)
                 {
@@ -106,6 +118,7 @@ namespace PT200Emulator_WinForms.Engine
 
         private async static Task Disconnected()
         {
+            MessageBox.Show("Anslutningen till servern har brutits. Programmet stängs ner.", "Anslutning bruten", MessageBoxButtons.OK, MessageBoxIcon.Error);
             await Task.Delay(5000);
             Environment.Exit(0);
         }
