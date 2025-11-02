@@ -10,7 +10,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.Design;
 using static PT200Emulator_WinForms.Controls.TerminalCtrl;
+using static PT200Emulator_WinForms.Controls.WinFormsRenderTarget;
 using static System.Windows.Forms.AxHost;
 
 namespace PT200Emulator_WinForms.Engine
@@ -41,6 +43,7 @@ namespace PT200Emulator_WinForms.Engine
             _parser.Screenbuffer.Scrolled += () => _renderer.ForceFullRender();
             _parser.Screenbuffer.AttachCaretController(new CaretController());
             terminalCtrl.AttachBuffer(_parser.Screenbuffer);
+            terminalCtrl.PerformLayout();
 
             byteStream.Disconnected += async () =>
             {
@@ -61,15 +64,14 @@ namespace PT200Emulator_WinForms.Engine
                 statusLine.SetOnline(true);
                 this.LogDebug($"Ansluten till {host}:{port}");
                 if (byteStream == null) throw new InvalidOperationException("byteStream is null in Connect");
-                 try
+                this.LogDebug($"Registrerar mottagningshanterare. byteStream {byteStream}:{byteStream.GetHashCode()}, parser {_parser}:{_parser.GetHashCode()}");
+                this.LogDebug($"Screenbuffer {_parser.Screenbuffer}:{_parser.Screenbuffer.GetHashCode()}, Size {_parser.Screenbuffer.Cols}x{_parser.Screenbuffer.Rows}");
+                try
                 {
                     byteStream.DataReceived += bytes =>
                     {
                         var parser = _parser ?? throw new InvalidOperationException("_parser is null when handling data");
-                        this.LogErr($"Registrerar mottagningshanterare. byteStream: {byteStream}, parser: {_parser}, bytes: {bytes} längd {bytes.Length}");
-                        this.LogErr($"Screenbuffer: {parser.Screenbuffer}, Size {parser.Screenbuffer.Cols}x{parser.Screenbuffer.Rows}");
-                        this.LogDebug($"Mottagna data: {BitConverter.ToString(bytes)}");
-
+                        this.LogDebug($"Mottagna data: längd {bytes.Length}, data \"{Encoding.ASCII.GetString(bytes)}\", bytes {BitConverter.ToString(bytes)}");
                         parser.Feed(bytes);
                     };
                 }
@@ -98,6 +100,17 @@ namespace PT200Emulator_WinForms.Engine
                 await Disconnected();
             }
             this.LogDebug("Mottagningsloop startad.");
+        }
+
+        public void Send(byte[] data)
+        {
+            if (byteStream == null)
+            {
+                this.LogErr("byteStream är null vid försök att skicka data.");
+                return;
+            }
+            this.LogDebug($"Skickar data: \"{Encoding.ASCII.GetString(data)}\" {BitConverter.ToString(data)}");
+            byteStream.WriteAsync(data);
         }
 
         public async Task Disconnect()

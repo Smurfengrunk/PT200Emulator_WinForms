@@ -1,4 +1,5 @@
-﻿using PT200_Logging;
+﻿using PT200_InputHandler;
+using PT200_Logging;
 using PT200_Parser;
 using PT200_Rendering;
 using PT200Emulator_WinForms.Controls;
@@ -22,17 +23,32 @@ namespace PT200Emulator_WinForms
         private CancellationTokenSource _cts = new();
         private static TerminalState terminalState = new TerminalState();
         private readonly LoggingLevelSwitch _levelSwitch;
+        private IInputMapper _inputMapper;
+        private PT200_InputHandler.PT200_InputHandler _inputHandler;
 
         public PT200(LoggingLevelSwitch levelSwitch)
         {
             InitializeComponent();
+            layoutPanel.PerformLayout();
+            this.PerformLayout();
             _levelSwitch = levelSwitch;
 
             rbGreen.ForeColor = Color.LimeGreen;
+            rbGreen.Click += (s, e) => terminalCtrl.Focus();
             rbAmber.ForeColor = Color.DarkOrange;
+            rbAmber.Click += (s, e) => terminalCtrl.Focus();
             rbWhite.ForeColor = Color.White;
+            rbWhite.Click += (s, e) => terminalCtrl.Focus();
             rbBlue.ForeColor = Color.Blue;
+            rbBlue.Click += (s, e) => terminalCtrl.Focus();
             rbColor.ForeColor = Color.Purple;
+            rbColor.Click += (s, e) => terminalCtrl.Focus();
+            ScreenFormatCombo.DropDownClosed += (s, e) => terminalCtrl.Focus();
+            LogLevelCombo.DropDownClosed += (s, e) => terminalCtrl.Focus();
+            ConnectButton.Click += (s, e) => terminalCtrl.Focus();
+            DisconnectButton.Click += (s, e) => terminalCtrl.Focus();
+            DiagButton.Click += (s, e) => terminalCtrl.Focus();
+            FullRedrawButton.Click += (s, e) => terminalCtrl.Focus();
             clockLabel.BackColor = Color.Transparent;
             numLockLabel.BackColor = Color.Transparent;
             capsLockLabel.BackColor = Color.Transparent;
@@ -46,7 +62,7 @@ namespace PT200Emulator_WinForms
             numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
             capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
             scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
-            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Green : statusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
             //Log.Logger = CreateLogger();
             statusController = new StatusLineController(logLabel, onlineLabel, systemLabel, dsrLabel, g0g1Label, statusLine);
             statusController.SetOnline(false);
@@ -59,13 +75,6 @@ namespace PT200Emulator_WinForms
 
             terminalCtrl = new TerminalCtrl();
             terminalCtrl.SuspendLayout();
-            terminalCtrl.BackColor = Color.Black;
-            terminalCtrl.Dock = DockStyle.None;
-            TerminalPanel.Controls.Add(terminalCtrl);
-            this.LogDebug("Calculated terminal size: {Size}", terminalCtrl.Size);
-            this.ClientSize = CalculateTerminalSize(80, 24 + 1); // extra rad för statusfält
-            this.LogDebug("Set MainForm client size to: {Size}", this.ClientSize);
-            terminalCtrl.Focus();
             this.LogDebug("Terminal Control initialized and buffer attached.");
             _transport = new Transport(statusController, terminalCtrl);
             _parser = _transport.GetParser();
@@ -87,15 +96,24 @@ namespace PT200Emulator_WinForms
                     }
                 }
             };
-            statusLine.Dock = DockStyle.Bottom;
-            terminalCtrl.Size = CalculateTerminalSize(80, 24);
-            terminalCtrl.Anchor = AnchorStyles.None;
-            terminalCtrl.Dock = DockStyle.None;
-            TerminalPanel.ResumeLayout(true);
+            terminalCtrl.BackColor = Color.Black;
+            terminalCtrl.Margin = new Padding(3, 3, 0, 0);
+            this.LogErr($"Terminal Control margin set to: {terminalCtrl.Margin}");
+            layoutPanel.Controls.Add(terminalCtrl, 1, 0);
             terminalCtrl.ResumeLayout(true);
+            SidePanel.Dock = DockStyle.Fill;
+            terminalCtrl.Dock = DockStyle.Fill;
+            statusLine.Dock = DockStyle.Fill;
+            this.PerformLayout();
+            layoutPanel.PerformLayout();
+            ResizeWindowToFit();
+            this.LogDebug("Terminal Control size set to: {Size}", terminalCtrl.Size);
+            this.LogDebug($"MainForm ClientSize: {this.ClientSize}, SidePanel: {SidePanel.Size}, statusLine: {statusLine.Size}");
+            this.LogDebug("Terminal Control location set to: {Location}", terminalCtrl.Location);
 
             this.KeyPreview = true;
             this.KeyUp += MainForm_KeyUp;
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.LogDebug("MainForm KeyUp event handler attached.");
 
             var formats = Enum.GetValues(typeof(TerminalState.ScreenFormat))
@@ -110,41 +128,47 @@ namespace PT200Emulator_WinForms
             LogLevelCombo.DataSource = Enum.GetValues(typeof(Serilog.Events.LogEventLevel));
             LogLevelCombo.SelectedIndex = 1;
             _levelSwitch = levelSwitch;
-        }
-
-        private Size CalculateTerminalSize(int cols, int rows)
-        {
-            SizeF charSize = TextRenderer.MeasureText("W", terminalCtrl.Font);
-            int terminalWidth = (int)Math.Ceiling((charSize.Width * cols));
-            int terminalHeight = (int)Math.Ceiling((charSize.Height * rows));
-            //this.ClientSize = new Size(terminalWidth + SidePanel.Width, terminalHeight + statusLine.Height);
-
-            return new Size(terminalWidth, terminalHeight);
+            _inputHandler = new();
+            _inputMapper = _inputHandler.inputMapper;
+            terminalCtrl.InputMapper = _inputMapper;
+            terminalCtrl._transport = _transport;
+            rePaint(Color.LimeGreen, Color.DarkGreen, Color.Black); rbGreen.Select();
+            FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
+            terminalCtrl.Focus();
         }
 
         private void rbGreen_CheckedChanged(object sender, EventArgs e)
         {
-            rePaint(Color.LimeGreen);
+            rePaint(Color.LimeGreen, DimColor(Color.LimeGreen), Color.Black);
         }
 
         private void rbAmber_CheckedChanged(object sender, EventArgs e)
         {
-            rePaint(Color.DarkOrange);
+            rePaint(Color.Orange, DimColor(Color.Orange), Color.Black);
         }
 
         private void rbWhite_CheckedChanged(object sender, EventArgs e)
         {
-            rePaint(Color.White);
+            rePaint(Color.White, DimColor(Color.White), Color.Black);
         }
 
         private void rbBlue_CheckedChanged(object sender, EventArgs e)
         {
-            rePaint(Color.Blue);
+            rePaint(Color.LightBlue, DimColor(Color.LightBlue), Color.Black);
         }
 
         private void rbColor_CheckedChanged(object sender, EventArgs e)
         {
-            rePaint(Color.Wheat);
+            rePaint(Color.Wheat, DimColor(Color.Wheat), Color.Black);
+        }
+
+        public Color DimColor(Color color, double Factor = 0.5)
+        {
+            return Color.FromArgb(
+                color.A,
+                (int)(color.R * Factor),
+                (int)(color.G * Factor),
+                (int)(color.B * Factor));
         }
 
         private void ScreenFormatCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -154,6 +178,9 @@ namespace PT200Emulator_WinForms
                 terminalState.screenFormat = format;
                 terminalState.SetScreenFormat();
                 terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
+                layoutPanel.PerformLayout();
+                this.PerformLayout();
+                ResizeWindowToFit(); // beräknar storlek baserat på layout
             }
         }
 
@@ -185,11 +212,17 @@ namespace PT200Emulator_WinForms
         }
 
 
-        private void rePaint(Color textColor)
+        private void rePaint(Color TextColor, Color StatusBarColor, Color BackColor)
         {
-            terminalCtrl.ForeColor = textColor;
-            terminalCtrl.BackColor = Color.Black; // alltid svart bakgrund
-            statusLine.BackColor = textColor;     // statusraden kan fortfarande följa textfärgen
+            terminalCtrl.ForeColor = TextColor;
+            terminalCtrl.BackColor = BackColor;     // alltid svart bakgrund
+            statusLine.BackColor = StatusBarColor;  // statusraden kan fortfarande följa textfärgen
+            statusLine.ForeColor = BackColor;       // och textfärgen inverterad
+            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
+            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
+            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
+
             terminalCtrl.ForceRepaint();
         }
 
@@ -214,7 +247,7 @@ namespace PT200Emulator_WinForms
             numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
             capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
             scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
-            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Green : statusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
         }
 
         private void StatusLine_Paint(object sender, PaintEventArgs e)
@@ -237,6 +270,7 @@ namespace PT200Emulator_WinForms
             this.LogDebug("Form loaded, starting transport connection...");
             base.OnLoad(e);
             await _transport.Connect(_cts.Token);
+            terminalCtrl.Focus();
         }
 
         private void DiagButton_Click(object sender, EventArgs e)
@@ -251,16 +285,49 @@ namespace PT200Emulator_WinForms
             Log.CloseAndFlush();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
-            this.LogDebug("Form loaded, starting transport connection...");
             terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
+            this.BeginInvoke(new Action(() =>
+            {
+                layoutPanel.PerformLayout();
+                this.PerformLayout();
+                ResizeWindowToFit();
+
+                this.LogDebug($"[Post-Layout] TerminalCtrl.Location = {terminalCtrl.Location}, Size = {terminalCtrl.Size}");
+            }));
+            this.LogDebug($"[Shown] TerminalCtrl.Location = {terminalCtrl.Location}, Size = {terminalCtrl.Size}");
+            this.LogDebug($"[Shown] layoutPanel.GetColumn = {layoutPanel.GetColumn(terminalCtrl)}, GetRow = {layoutPanel.GetRow(terminalCtrl)}");
+        }
+
+        public void ResizeWindowToFit()
+        {
+            layoutPanel.PerformLayout();
+            this.PerformLayout();
+            var terminalSize = terminalCtrl.GetPreferredSize(Size.Empty);
+            var sideSize = SidePanel.GetPreferredSize(Size.Empty);
+            var statusSize = statusLine.GetPreferredSize(Size.Empty);
+
+            int totalWidth = terminalSize.Width + sideSize.Width;
+            int totalHeight = terminalSize.Height + statusSize.Height;
+
+            this.ClientSize = new Size(totalWidth, totalHeight);
+            this.MinimumSize = this.Size;
+
+            this.LogDebug($"TerminalCtrl final location: {terminalCtrl.Location}, size: {terminalCtrl.Size}");
+            this.LogDebug($"MainForm resized to ClientSize {totalWidth}x{totalHeight}, Minimum size set to {this.Size.Width}x{this.Size.Height}");
         }
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             this.LogDebug("Button clicked at {Time}", DateTime.Now);
 
+        }
+
+        private void FullRedrawButton_Click(object sender, EventArgs e)
+        {
+            terminalCtrl.AlwaysFullRedraw = !terminalCtrl.AlwaysFullRedraw;
+            FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
         }
     }
 
