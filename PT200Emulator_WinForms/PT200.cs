@@ -7,6 +7,7 @@ using PT200Emulator_WinForms.Engine;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static System.Windows.Forms.AxHost;
@@ -25,10 +26,15 @@ namespace PT200Emulator_WinForms
         private readonly LoggingLevelSwitch _levelSwitch;
         private IInputMapper _inputMapper;
         private PT200_InputHandler.PT200_InputHandler _inputHandler;
+        private Panel terminalHost = new Panel();
+        private int callCounter = 0;
+
 
         public PT200(LoggingLevelSwitch levelSwitch)
         {
+            callCounter++;
             InitializeComponent();
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             layoutPanel.PerformLayout();
             this.PerformLayout();
             _levelSwitch = levelSwitch;
@@ -70,21 +76,6 @@ namespace PT200Emulator_WinForms
             statusController.SetDsr(false);
             statusController.SetCharset(false);
             Program.logForm.Show();
-
-            InitStatusTimers();
-
-            terminalCtrl = new TerminalCtrl();
-            terminalCtrl.SuspendLayout();
-            this.LogDebug("Terminal Control initialized and buffer attached.");
-            _transport = new Transport(statusController, terminalCtrl);
-            _parser = _transport.GetParser();
-
-            statusLine.BackColor = terminalCtrl.ForeColor;
-            statusLine.Renderer = new ToolStripProfessionalRenderer(new ProfessionalColorTable
-            {
-                // neutralisera kantfärger
-                UseSystemColors = false
-            });
             statusLine.Paint += (s, e) =>
             {
                 foreach (ToolStripItem item in statusLine.Items)
@@ -96,24 +87,44 @@ namespace PT200Emulator_WinForms
                     }
                 }
             };
+
+            InitStatusTimers();
+            _transport = new Transport(statusController, terminalCtrl);
+            _parser = _transport.GetParser();
+
+            terminalHost.Name = "terminalHost";
+            terminalHost.Dock = DockStyle.Fill;
+            layoutPanel.Controls.Add(terminalHost, 1, 0);
+
+            terminalCtrl = new TerminalCtrl(_transport);
+            terminalCtrl._transport = _transport;
+            terminalCtrl.SuspendLayout();
+            terminalCtrl.AttachBuffer(_parser.Screenbuffer);
             terminalCtrl.BackColor = Color.Black;
             terminalCtrl.Margin = new Padding(3, 3, 0, 0);
+            this.LogDebug("Terminal Control initialized and buffer attached.");
             this.LogErr($"Terminal Control margin set to: {terminalCtrl.Margin}");
-            layoutPanel.Controls.Add(terminalCtrl, 1, 0);
-            terminalCtrl.ResumeLayout(true);
+            terminalCtrl.Dock = DockStyle.Fill;
+            terminalHost.Controls.Add(terminalCtrl);
+
             SidePanel.Dock = DockStyle.Fill;
             terminalCtrl.Dock = DockStyle.Fill;
+            statusLine.BackColor = terminalCtrl.ForeColor;
+            statusLine.Renderer = new ToolStripProfessionalRenderer(new ProfessionalColorTable
+            {
+                // neutralisera kantfärger
+                UseSystemColors = false
+            });
             statusLine.Dock = DockStyle.Fill;
-            this.PerformLayout();
             layoutPanel.PerformLayout();
-            ResizeWindowToFit();
+            this.PerformLayout();
+            ResizeWindowToFit(terminalState.Columns, terminalState.Rows);
             this.LogDebug("Terminal Control size set to: {Size}", terminalCtrl.Size);
             this.LogDebug($"MainForm ClientSize: {this.ClientSize}, SidePanel: {SidePanel.Size}, statusLine: {statusLine.Size}");
             this.LogDebug("Terminal Control location set to: {Location}", terminalCtrl.Location);
 
             this.KeyPreview = true;
             this.KeyUp += MainForm_KeyUp;
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.LogDebug("MainForm KeyUp event handler attached.");
 
             var formats = Enum.GetValues(typeof(TerminalState.ScreenFormat))
@@ -131,10 +142,11 @@ namespace PT200Emulator_WinForms
             _inputHandler = new();
             _inputMapper = _inputHandler.inputMapper;
             terminalCtrl.InputMapper = _inputMapper;
-            terminalCtrl._transport = _transport;
             rePaint(Color.LimeGreen, Color.DarkGreen, Color.Black); rbGreen.Select();
             FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
+            terminalCtrl.ResumeLayout(true);
             terminalCtrl.Focus();
+            this.LogDebug($"Mainform ctor called {callCounter} times");
         }
 
         private void rbGreen_CheckedChanged(object sender, EventArgs e)
@@ -178,9 +190,11 @@ namespace PT200Emulator_WinForms
                 terminalState.screenFormat = format;
                 terminalState.SetScreenFormat();
                 terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
+                //terminalCtrl.ForceRepaint();
                 layoutPanel.PerformLayout();
                 this.PerformLayout();
-                ResizeWindowToFit(); // beräknar storlek baserat på layout
+                ResizeWindowToFit(terminalState.Columns, terminalState.Rows); // beräknar storlek baserat på layout
+                this.LogDebug($"Screen format changed to {format}, terminal resized to {terminalCtrl.Size}");
             }
         }
 
@@ -287,47 +301,51 @@ namespace PT200Emulator_WinForms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
-            this.BeginInvoke(new Action(() =>
-            {
-                layoutPanel.PerformLayout();
-                this.PerformLayout();
-                ResizeWindowToFit();
-
-                this.LogDebug($"[Post-Layout] TerminalCtrl.Location = {terminalCtrl.Location}, Size = {terminalCtrl.Size}");
-            }));
-            this.LogDebug($"[Shown] TerminalCtrl.Location = {terminalCtrl.Location}, Size = {terminalCtrl.Size}");
-            this.LogDebug($"[Shown] layoutPanel.GetColumn = {layoutPanel.GetColumn(terminalCtrl)}, GetRow = {layoutPanel.GetRow(terminalCtrl)}");
+            this.LogDebug($"MainForm shown. ClientSize: {this.ClientSize}, layoutPanel size: {layoutPanel.Size}, terminalCtrl size: {terminalCtrl.Size}");
         }
 
-        public void ResizeWindowToFit()
+
+        public void ResizeWindowToFit(int cols, int rows)
         {
-            layoutPanel.PerformLayout();
-            this.PerformLayout();
-            var terminalSize = terminalCtrl.GetPreferredSize(Size.Empty);
-            var sideSize = SidePanel.GetPreferredSize(Size.Empty);
-            var statusSize = statusLine.GetPreferredSize(Size.Empty);
+            int termWidth = cols * terminalCtrl._charWidth;
+            int termHeight = rows * terminalCtrl._charHeight;
 
-            int totalWidth = terminalSize.Width + sideSize.Width;
-            int totalHeight = terminalSize.Height + statusSize.Height;
+            int sideWidth = SidePanel.GetPreferredSize(Size.Empty).Width;
+            int statusHeight = statusLine.GetPreferredSize(Size.Empty).Height;
 
+            int totalWidth = sideWidth + termWidth + layoutPanel.Padding.Horizontal + terminalHost.Margin.Horizontal;
+            int totalHeight = termHeight + statusHeight + layoutPanel.Padding.Vertical + terminalHost.Margin.Vertical;
+
+            this.MinimumSize = new Size(totalWidth, totalHeight);
             this.ClientSize = new Size(totalWidth, totalHeight);
-            this.MinimumSize = this.Size;
 
-            this.LogDebug($"TerminalCtrl final location: {terminalCtrl.Location}, size: {terminalCtrl.Size}");
-            this.LogDebug($"MainForm resized to ClientSize {totalWidth}x{totalHeight}, Minimum size set to {this.Size.Width}x{this.Size.Height}");
+            this.LogDebug($"Resized window to fit {cols}x{rows} chars → {totalWidth}x{totalHeight}px");
         }
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            this.LogDebug("Button clicked at {Time}", DateTime.Now);
+            this.LogDebug("Connect button clicked at {Time}", DateTime.Now);
+            _ = _transport.Connect(_cts.Token);
 
+        }
+
+        private void DisconnectButton_Click(object sender, EventArgs e)
+        {
+            this.LogDebug("Disconnect button clicked at {Time}", DateTime.Now);
+            _ = _transport.Disconnect();
         }
 
         private void FullRedrawButton_Click(object sender, EventArgs e)
         {
             terminalCtrl.AlwaysFullRedraw = !terminalCtrl.AlwaysFullRedraw;
             FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
+        }
+
+        private void ReconnectButton_Click(object sender, EventArgs e)
+        {
+            this.LogDebug("Reconnect button clicked at {Time}", DateTime.Now);
+            _ = _transport.Reconnect(_cts.Token);
+
         }
     }
 

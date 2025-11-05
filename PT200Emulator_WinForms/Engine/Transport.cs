@@ -20,30 +20,23 @@ namespace PT200Emulator_WinForms.Engine
     public class Transport
     {
         private TerminalParser _parser;
-        private TerminalCtrl terminalCtrl;
-        private WinFormsCaretController _caret;
         private TerminalState _state = new();
         private IByteStream byteStream = new PT200_Transport.TelnetByteStream();
         private DataPathProvider _basePath = new DataPathProvider(AppDomain.CurrentDomain.BaseDirectory);
         private static LocalizationProvider _localization = new();
         private ModeManager modeManager = new ModeManager(_localization);
-        private RenderCore _renderer;
         private StatusLineController statusLine;
+        private static string _host = "localhost";
+        private static int _port = 2323;
+        private static bool _connected = false;
 
         public Transport(StatusLineController _statusLine, TerminalCtrl _terminalCtrl)
         {
             statusLine = _statusLine;
-            terminalCtrl = _terminalCtrl;
             _state.screenFormat = TerminalState.ScreenFormat.S80x24;
             _state.SetScreenFormat();
-            _caret = new WinFormsCaretController(terminalCtrl);
-            _parser = new TerminalParser(_basePath, _state, modeManager, _caret);
-            _renderer = new RenderCore();
+            _parser = new TerminalParser(_basePath, _state, modeManager);
             _parser.DcsResponse += (bytes) => byteStream.WriteAsync(bytes);
-            _parser.Screenbuffer.Scrolled += () => _renderer.ForceFullRender();
-            _parser.Screenbuffer.AttachCaretController(new CaretController());
-            terminalCtrl.AttachBuffer(_parser.Screenbuffer);
-            terminalCtrl.PerformLayout();
 
             byteStream.Disconnected += async () =>
             {
@@ -51,7 +44,7 @@ namespace PT200Emulator_WinForms.Engine
                 this.LogInformation("Servern kopplade ner, stänger programmet.");
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Servern kopplade ner, stänger programmet.");
-                await Disconnected();
+                await Disconnected(_connected);
             };
             this.LogDebug("Transport initialiserad.");
         }
@@ -59,9 +52,12 @@ namespace PT200Emulator_WinForms.Engine
         public async Task Connect(CancellationToken cancellationToken, string host = "localhost", int port = 2323)
         {
             this.LogDebug($"Försöker ansluta till {host}:{port}...");
+            _host = host;
+            _port = port;
             if (await byteStream.ConnectAsync(host, port, cancellationToken))
             {
                 statusLine.SetOnline(true);
+                _connected = true;
                 this.LogDebug($"Ansluten till {host}:{port}");
                 if (byteStream == null) throw new InvalidOperationException("byteStream is null in Connect");
                 this.LogDebug($"Registrerar mottagningshanterare. byteStream {byteStream}:{byteStream.GetHashCode()}, parser {_parser}:{_parser.GetHashCode()}");
@@ -90,14 +86,6 @@ namespace PT200Emulator_WinForms.Engine
                     this.LogErr($"Fel vid start av mottagningsloop: {ex}");
                     statusLine.SetSystemReady(false);
                 }
-            }
-            else
-            {
-                this.LogErr($"Kunde inte ansluta till {host}:{port}");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Kunde inte ansluta till {host}:{port}");
-                Console.WriteLine("Stänger programmet");
-                await Disconnected();
             }
             this.LogDebug("Mottagningsloop startad.");
         }
@@ -129,11 +117,20 @@ namespace PT200Emulator_WinForms.Engine
             }
         }
 
-        private async static Task Disconnected()
+        private async static Task Disconnected(bool connected)
         {
-            MessageBox.Show("Anslutningen till servern har brutits. Programmet stängs ner.", "Anslutning bruten", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            var msgboxText = connected ? $"Anslutningen till {_host}:{_port} har brutits. Programmet stängs ner." : $"Kunde inte ansluta till {_host}:{_port}. Programmet stängs ner.";
+            MessageBox.Show(msgboxText, "Nedkoppling", MessageBoxButtons.OK, MessageBoxIcon.Error);
             await Task.Delay(5000);
             Environment.Exit(0);
+        }
+
+        public async Task Reconnect(CancellationToken cancellationToken)
+        {
+            this.LogInformation($"Försöker återansluta till {_host}:{_port}...");
+            await Disconnect();
+            await Task.Delay(500); // liten paus för att frigöra socket
+            await Connect(cancellationToken, _host, _port);
         }
 
         public TerminalParser GetParser()

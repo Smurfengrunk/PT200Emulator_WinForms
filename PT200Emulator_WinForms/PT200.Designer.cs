@@ -58,6 +58,7 @@ namespace PT200Emulator_WinForms
             numLockLabel = new ToolStripStatusLabel();
             clockLabel = new ToolStripStatusLabel();
             layoutPanel = new TableLayoutPanel();
+            ReconnectButton = new Button();
             SidePanel.SuspendLayout();
             rbPanel.SuspendLayout();
             statusLine.SuspendLayout();
@@ -70,6 +71,7 @@ namespace PT200Emulator_WinForms
             SidePanel.BackColor = Color.DarkGray;
             SidePanel.BorderStyle = BorderStyle.Fixed3D;
             SidePanel.CausesValidation = false;
+            SidePanel.Controls.Add(ReconnectButton);
             SidePanel.Controls.Add(FullRedrawButton);
             SidePanel.Controls.Add(DiagButton);
             SidePanel.Controls.Add(DisconnectButton);
@@ -91,7 +93,7 @@ namespace PT200Emulator_WinForms
             // FullRedrawButton
             // 
             FullRedrawButton.Anchor = AnchorStyles.Left;
-            FullRedrawButton.Location = new Point(92, 279);
+            FullRedrawButton.Location = new Point(92, 294);
             FullRedrawButton.Name = "FullRedrawButton";
             FullRedrawButton.Size = new Size(76, 23);
             FullRedrawButton.TabIndex = 13;
@@ -103,7 +105,7 @@ namespace PT200Emulator_WinForms
             // DiagButton
             // 
             DiagButton.Anchor = AnchorStyles.Left;
-            DiagButton.Location = new Point(3, 279);
+            DiagButton.Location = new Point(3, 294);
             DiagButton.Name = "DiagButton";
             DiagButton.Size = new Size(86, 23);
             DiagButton.TabIndex = 12;
@@ -265,7 +267,7 @@ namespace PT200Emulator_WinForms
             // messageLabel
             // 
             messageLabel.Name = "messageLabel";
-            messageLabel.Size = new Size(510, 17);
+            messageLabel.Size = new Size(70, 17);
             messageLabel.Spring = true;
             messageLabel.Text = "Ready...";
             messageLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -348,7 +350,6 @@ namespace PT200Emulator_WinForms
             layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             layoutPanel.Controls.Add(SidePanel, 0, 0);
             layoutPanel.Controls.Add(statusLine, 1, 1);
-            layoutPanel.SetRowSpan(SidePanel, 2);
             layoutPanel.Dock = DockStyle.Fill;
             layoutPanel.Location = new Point(0, 0);
             layoutPanel.Margin = new Padding(0);
@@ -358,6 +359,18 @@ namespace PT200Emulator_WinForms
             layoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
             layoutPanel.Size = new Size(800, 450);
             layoutPanel.TabIndex = 3;
+            // 
+            // ReconnectButton
+            // 
+            ReconnectButton.Anchor = AnchorStyles.Left;
+            ReconnectButton.Location = new Point(86, 233);
+            ReconnectButton.Name = "ReconnectButton";
+            ReconnectButton.Size = new Size(75, 23);
+            ReconnectButton.TabIndex = 14;
+            ReconnectButton.TabStop = false;
+            ReconnectButton.Text = "Reconnect";
+            ReconnectButton.UseVisualStyleBackColor = true;
+            ReconnectButton.Click += ReconnectButton_Click;
             // 
             // PT200
             // 
@@ -407,5 +420,6 @@ namespace PT200Emulator_WinForms
         private Button ConnectButton;
         private TableLayoutPanel layoutPanel;
         private Button FullRedrawButton;
+        private Button ReconnectButton;
     }
 }
