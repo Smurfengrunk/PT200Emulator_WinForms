@@ -12,8 +12,8 @@
   <ItemGroup>
     <PackageReference Include="PT200_InputHandler" Version="1.2.1" />
     <PackageReference Include="PT200_Logging" Version="1.2.1" />
-    <PackageReference Include="PT200_Parser" Version="1.2.6" />
-    <PackageReference Include="PT200_Rendering" Version="1.2.5" />
+    <PackageReference Include="PT200_Parser" Version="1.2.7" />
+    <PackageReference Include="PT200_Rendering" Version="1.2.6" />
     <PackageReference Include="PT200_Transport" Version="1.2.1" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
@@ -36,6 +36,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Config\transportConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\uiConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -33,6 +33,7 @@ namespace PT200Emulator_WinForms.Controls
         public bool AlwaysFullRedraw { get; set; } = true;
         private bool _layoutReady = false;
         private WinFormsRenderTarget _renderTarget;
+        private UiConfig _uiConfig;
 
         private static readonly Dictionary<Keys, int> KeyToScanCode = new()
         {
@@ -122,10 +123,11 @@ namespace PT200Emulator_WinForms.Controls
             { Keys.Escape, 0x01 }
         };
 
-        public TerminalCtrl(Transport transport)
+        public TerminalCtrl(Transport transport, UiConfig uiConfig)
         {
             _transport = transport;
-            Initialize(_transport);
+            _uiConfig = uiConfig;
+
             _throttleTimer = new System.Windows.Forms.Timer { Interval = 33 }; // ~30 fps
             _throttleTimer.Tick += (s, e) =>
             {
@@ -140,14 +142,17 @@ namespace PT200Emulator_WinForms.Controls
             // Monospace-font
             _font = new Font("Consolas", 12, FontStyle.Regular, GraphicsUnit.Pixel);
 
-            // Mät cellstorlek exakt
-            using (var g = this.CreateGraphics())
+            Initialize(_transport);
+
+            this.Width = _charWidth * _parser.Screenbuffer.Cols;
+            this.Height = _charHeight * _parser.Screenbuffer.Rows;
+
+            /*using (var g = this.CreateGraphics())
             {
                 var size = g.MeasureString("W", _font, int.MaxValue, StringFormat.GenericTypographic);
                 _charWidth = (int)Math.Ceiling(size.Width);
                 _charHeight = (int)Math.Ceiling(size.Height);
-            }
-            this.LogDebug($"TerminalCtrl initialized with char size {_charWidth}x{_charHeight}, control size {this.Size}");
+            }*/
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             this.TabStop = true;
@@ -157,53 +162,66 @@ namespace PT200Emulator_WinForms.Controls
         public void Initialize(Transport transport)
         {
             _parser = transport.GetParser();
+            // Mät cellstorlek exakt
+            _charWidth = MeasureCharWidth(_font, _parser.Screenbuffer.Cols);
+            _charHeight = _font.Height;
             _renderTarget = new WinFormsRenderTarget(
                                    this.CreateGraphics(), _font, _charWidth, _charHeight,
                                    this.ForeColor, this.BackColor, _buffer);
-            _caretController = new WinFormsCaretController(this, _renderTarget, IRenderTarget.CursorStyle.Block, _buffer);
-            _parser.Screenbuffer.AttachCaretController(_caretController);
+            _renderTarget.Terminal = this;
+            _caretController = new WinFormsCaretController(this, _renderTarget, _uiConfig.CursorStylePreference, _buffer, this);
             _parser.Screenbuffer.Scrolled += () => _core.ForceFullRender();
+            AttachBuffer(_parser.Screenbuffer);
+            _parser.Screenbuffer.AttachCaretController(_caretController);
         }
+
         public void AttachBuffer(ScreenBuffer buffer)
         {
-            _buffer = buffer;
-            _renderTarget._buffer = buffer;
-            _buffer.BufferUpdated += () =>
+            if (buffer != null)
             {
-                if (this.IsHandleCreated && !this.IsDisposed)
-                    _pendingInvalidate = true;
-            };
+                _buffer = buffer;
+                _renderTarget._buffer = buffer;
+                _buffer.BufferUpdated += () =>
+                {
+                    if (this.IsHandleCreated && !this.IsDisposed)
+                        _pendingInvalidate = true;
+                };
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            if (_buffer == null) return;
-
             if (AlwaysFullRedraw)
                 _core.ForceFullRender();
+
+            if (_buffer == null)
+            {
+                this.LogDebug("Buffer is null, skipping OnPaint");
+                return;
+            }
 
             // Uppdatera Graphics för denna frame
             _renderTarget.Graphics = e.Graphics;
             _renderTarget._buffer = _buffer;
 
+            //this.LogDebug($"[OnPaint] _renderTarget._caretVisible = {_renderTarget._caretVisible}"); // temporärt för skumma NRE
             // Rita texten
             _core.Render(_buffer, _renderTarget);
 
             // Rita caret ovanpå
             if (_renderTarget._caretVisible)
             {
-                _renderTarget.SetCaret(_buffer.CursorRow, _buffer.CursorCol, _renderTarget._caretVisible, _renderTarget._caretStyle);
-                _renderTarget.DrawCaret(e.Graphics);
+                _renderTarget.SetCaret(_buffer.CursorRow, _buffer.CursorCol);
+                _renderTarget.DrawCaret(e.Graphics, ForeColor);
             }
 
             // Overlay/debug
             if (ShowDiagnosticOverlay)
             {
                 using var overlayBrush = new SolidBrush(Color.Yellow);
-                e.Graphics.DrawString($"Size: {Width}x{Height}, Chars: {_buffer.Rows}x{_buffer.Cols}",
-                                      this.Font, overlayBrush, new PointF(2, 2));
+                e.Graphics.DrawString($"Size: {Width}x{Height}, Chars: {_buffer.Rows}x{_buffer.Cols}", this.Font, overlayBrush, new PointF(2, 2));
             }
         }
 
@@ -222,6 +240,7 @@ namespace PT200Emulator_WinForms.Controls
 
         protected override void OnResize(EventArgs e)
         {
+            if (this.ClientSize.Height == 0 || this.ClientSize.Width == 0) return;
             base.OnResize(e);
             UpdateBufferFromSize();
         }
@@ -322,25 +341,53 @@ namespace PT200Emulator_WinForms.Controls
             int cols = this.ClientSize.Width / _charWidth;
             int rows = this.ClientSize.Height / _charHeight;
 
-            _buffer.Resize(rows, cols);
             this.LogDebug($"Buffer resized to {cols}x{rows} based on ClientSize {this.ClientSize.Width}x{this.ClientSize.Height}");
+            _buffer.Resize(rows, cols);
+        }
+
+        public void RePaint(Color fg, Color bg)
+        {
+            this.ForeColor = fg;
+            this.BackColor = bg;
+            _renderTarget.ChangeColor(fg, bg);
+            ForceRepaint();
+        }
+
+        public void SetCursorStyle(CursorStyle style, bool blink)
+        {
+            _caretController.SetCursorStyle(style, blink);
+        }
+
+        private int MeasureCharWidth(Font font, int columns)
+        {
+            // Bygg en teststräng med lika många tecken som kolumner
+            string test = new string('W', columns);
+
+            var size = TextRenderer.MeasureText(
+                test,
+                font,
+                new Size(int.MaxValue, int.MaxValue),
+                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.NoClipping);
+
+            // Dividera med antalet tecken för att få "advance width"
+            return size.Width / columns;
         }
     }
 
     internal class WinFormsRenderTarget : IRenderTarget
     {
         public Graphics Graphics { get; set; }
+        internal TerminalCtrl Terminal { get; set; }
         private readonly Font _font;
         private int _charWidth;
         private int _charHeight;
-        private readonly Color _fore;
-        private readonly Color _back;
+        private Color _fore;
+        private Color _back;
         public ScreenBuffer _buffer;
-        private IRenderTarget.CursorStyle _style;
-        internal bool _caretVisible = true;
+        internal bool _caretVisible;
         internal int _caretRow = 0;
         internal int _caretCol = 0;
-        internal IRenderTarget.CursorStyle _caretStyle;
+        private CursorStyle _caretStyle;
 
         public WinFormsRenderTarget(Graphics g, Font font, int charWidth, int charHeight,
                                     Color fore, Color back, ScreenBuffer buffer)
@@ -353,12 +400,12 @@ namespace PT200Emulator_WinForms.Controls
             _fore = fore;
             _back = back;
 
-            Size size = TextRenderer.MeasureText("W", _font,
+            /*Size size = TextRenderer.MeasureText("W", _font,
                 new Size(int.MaxValue, int.MaxValue),
                 TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix);
 
-            _charWidth = size.Width + 1; // justera med 1 pixel
-            _charHeight = size.Height;
+            _charWidth = size.Width; // justera med 1 pixel
+            _charHeight = size.Height;*/
             if (_font != null) this.LogDebug($"WinFormsRenderTarget initialized with char size {_charWidth}x{_charHeight} and Font {_font.Name} size {_font.Size}");
             else this.LogWarning("Font is null in WinFormsRenderTarget constructor!");
         }
@@ -367,28 +414,41 @@ namespace PT200Emulator_WinForms.Controls
 
         public void DrawRun(RenderRun run)
         {
-            //var fg = TranslateConsoleColor(run.Fg);
-            //var bg = TranslateConsoleColor(run.Bg);
-            if (_buffer == null) Debugger.Break();
-
             int x = run.StartCol * _charWidth;
             int y = run.Row * _charHeight;
 
-            var reverse = _buffer.ZoneAttributes[run.Row, run.StartCol].ReverseVideo;
-            var low = _buffer.ZoneAttributes[run.Row, run.StartCol].LowIntensity;
+            var attr = _buffer.ZoneAttributes[run.Row, run.StartCol];
+            var reverse = attr.ReverseVideo;
+            var low = attr.LowIntensity;
 
-            var fgBase = reverse ? this._back : this._fore;
-            var bgBase = reverse ? this._fore : this._back;
+            var fgBase = reverse ? _back : _fore;
+            var bgBase = reverse ? _fore : _back;
 
-            // Justera foreground om lowintensity är satt
             var fg = low ? DimColor(fgBase) : fgBase;
             var bg = bgBase;
 
-            TextRenderer.DrawText(Graphics, new string(run.Chars), _font,
-                                  new Point(x, y), fg, bg,
-                                  TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix);
-            //_g.FillRectangle(bgBrush, x, y, run.Chars.Length * _charWidth, _charHeight);
-            //_g.DrawString(new string(run.Chars), _font, fgBrush, x, y);
+            // 1. Fyll hela cellens bakgrund
+            using (var bgBrush = new SolidBrush(bg))
+            {
+                Graphics.FillRectangle(bgBrush, x, y, run.Chars.Length * _charWidth, _charHeight);
+            }
+
+            // 2. Rita texten ovanpå, utan bakgrund
+            TextRenderer.DrawText(
+                Graphics,
+                new string(run.Chars),
+                _font,
+                new Point(x, y),
+                fg,
+                Color.Transparent,
+                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.NoClipping
+            );
+        }
+
+        internal void ChangeColor(Color fg, Color bg)
+        {
+            _fore = fg;
+            _back = bg;
         }
 
         public Color DimColor(Color color, double Factor = 0.5)
@@ -420,15 +480,13 @@ namespace PT200Emulator_WinForms.Controls
             _ => Color.Wheat
         };
 
-        public void SetCaret(int row, int col, bool visible, CursorStyle style)
+        public void SetCaret(int row, int col)
         {
             _caretRow = row;
             _caretCol = col;
-            _caretVisible = visible;
-            _caretStyle = style;
         }
 
-        public void DrawCaret(Graphics g)
+        public void DrawCaret(Graphics g, Color caretColor)
         {
             if (!_caretVisible || _buffer == null) return;
 
@@ -438,21 +496,26 @@ namespace PT200Emulator_WinForms.Controls
             switch (_caretStyle)
             {
                 case CursorStyle.Block:
-                    using (var overlay = new SolidBrush(Color.LimeGreen))
+                    //using (var overlay = new SolidBrush(TranslateColor(_buffer.GetCell(_buffer.CursorRow, _buffer.CursorCol).Foreground)))
+                    using (var overlay = new SolidBrush(caretColor))
                     {
-                        this.LogDebug($"Filling rectangle at ({x}, {y}) with char width {_charWidth}, char height {_charHeight} using overlay color {overlay.Color.Name}");
                         g.FillRectangle(overlay, x, y, _charWidth, _charHeight);
                     }
                     break;
 
                 case CursorStyle.HorizontalBar:
-                    g.FillRectangle(Brushes.LimeGreen, x, y + _charHeight - 2, _charWidth, 2);
+                    g.FillRectangle(new SolidBrush(caretColor), x, y + _charHeight - 2, _charWidth, 2);
                     break;
 
                 case CursorStyle.VerticalBar:
-                    g.FillRectangle(Brushes.LimeGreen, x, y, 2, _charHeight);
+                    g.FillRectangle(new SolidBrush(caretColor), x, y, 2, _charHeight);
                     break;
             }
+        }
+
+        public void SetCaretStyle(CursorStyle style)
+        {
+            _caretStyle = style;
         }
     }
 
@@ -460,64 +523,80 @@ namespace PT200Emulator_WinForms.Controls
     internal class WinFormsCaretController : ICaretController
     {
         private readonly Control _control;
+        private readonly TerminalCtrl _terminalCtrl;
         private readonly WinFormsRenderTarget _renderTarget;
         private readonly System.Windows.Forms.Timer _blinkTimer;
-        private bool _showCaret = true;
         private int _row, _col;
-        private IRenderTarget.CursorStyle _style = IRenderTarget.CursorStyle.HorizontalBar;
+        internal IRenderTarget.CursorStyle _style = IRenderTarget.CursorStyle.HorizontalBar;
         private ScreenBuffer _buffer;
+        private bool _cursorBlink = true;
         public WinFormsCaretController(Control control) => _control = control;
 
-        public WinFormsCaretController(Control control, WinFormsRenderTarget renderTarget, IRenderTarget.CursorStyle style, ScreenBuffer buffer)
+        public WinFormsCaretController(Control control, WinFormsRenderTarget renderTarget, IRenderTarget.CursorStyle style, ScreenBuffer buffer, TerminalCtrl ctrl)
         {
             _control = control;
             _renderTarget = renderTarget;
-            _style = style;
             _buffer = buffer;
+            _terminalCtrl = ctrl;
+            SetCursorStyle(style, _cursorBlink);
 
             _blinkTimer = new System.Windows.Forms.Timer();
             _blinkTimer.Interval = 500;
             _blinkTimer.Tick += (s, e) =>
             {
-                _showCaret = !_showCaret;
+                _renderTarget._caretVisible = !_renderTarget._caretVisible;
                 _control.Invalidate(); // trigga omritning
             };
-            _blinkTimer.Start();
+            if (_cursorBlink) _blinkTimer.Start();
+            this.LogDebug($"[WinFormsCaretController] Cursor style {_style}");
         }
 
         public void SetCaretPosition(int row, int col)
         {
             _row = row;
             _col = col;
-            _renderTarget.SetCaret(_row, _col, _showCaret, _style);
+            _renderTarget.SetCaret(_row, _col);
             _control.Invalidate();
+            this.LogDebug($"[SetCaretPosition] Cursor style {_style}");
         }
 
-        public void SetCursorStyle(IRenderTarget.CursorStyle style)
+        public void SetCursorStyle(IRenderTarget.CursorStyle style, bool blink)
         {
-            if (_style == style) return;
             _style = style;
-            _renderTarget.SetCaret(_row, _col, _showCaret, _style);
+            _cursorBlink = blink;
+            _renderTarget.SetCaretStyle(_style);
+            if (_blinkTimer != null)
+                if (_cursorBlink) _blinkTimer.Start();
+                else
+                {
+                    _blinkTimer.Stop();
+                    _renderTarget._caretVisible = true;
+                }
             _control.Invalidate();
+            this.LogDebug($"[SetCursorStyle] Cursor style {_style}");
+
         }
         public void MoveCaret(int dRow, int dCol)
         {
             _row = _row + dRow;
             _col = _col + dCol;
             _buffer.MarkDirty();
+            _control.Invalidate();
+            this.LogDebug($"[MoveCaret] Cursor style {_style}");
         }
         public void Show()
         {
-            _showCaret = true;
+            _renderTarget._caretVisible = true;
             _blinkTimer.Start();
-            _control.Invalidate();
+            this.LogDebug($"[Show] Cursor style {_style}");
         }
 
         public void Hide()
         {
-            _showCaret = false;
+            _renderTarget._caretVisible = false;
             _blinkTimer.Stop();
             _control.Invalidate();
+            this.LogDebug($"[Hide] Cursor style {_style}");
         }
     }
 }

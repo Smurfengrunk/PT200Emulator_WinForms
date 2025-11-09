@@ -79,12 +79,12 @@ namespace PT200Emulator_WinForms.Engine
                 try
                 {
                     _ = byteStream.StartReceiveLoop(cancellationToken);
-                    statusLine.SetSystemReady(true);
+                    statusLine.SetSystemReady(true, (_state.Columns >= 132) ? true : false);
                 }
                 catch (Exception ex)
                 {
                     this.LogErr($"Fel vid start av mottagningsloop: {ex}");
-                    statusLine.SetSystemReady(false);
+                    statusLine.SetSystemReady(false, false);
                 }
             }
             this.LogDebug("Mottagningsloop startad.");
@@ -109,7 +109,7 @@ namespace PT200Emulator_WinForms.Engine
                 var completed = await Task.WhenAny(disconnectTask, Task.Delay(2000));
                 if (completed != disconnectTask)
                     this.LogWarning("Disconnect hängde, fortsätter ändå...");
-                else statusLine.SetSystemReady(false);
+                else statusLine.SetSystemReady(false, false);
             }
             catch (Exception ex)
             {

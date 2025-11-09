@@ -31,6 +31,9 @@ namespace PT200Emulator_WinForms
         private void InitializeComponent()
         {
             SidePanel = new Panel();
+            cursorStyleCombo = new ComboBox();
+            BlinkBox = new CheckBox();
+            ReconnectButton = new Button();
             FullRedrawButton = new Button();
             DiagButton = new Button();
             DisconnectButton = new Button();
@@ -58,7 +61,6 @@ namespace PT200Emulator_WinForms
             numLockLabel = new ToolStripStatusLabel();
             clockLabel = new ToolStripStatusLabel();
             layoutPanel = new TableLayoutPanel();
-            ReconnectButton = new Button();
             SidePanel.SuspendLayout();
             rbPanel.SuspendLayout();
             statusLine.SuspendLayout();
@@ -71,6 +73,8 @@ namespace PT200Emulator_WinForms
             SidePanel.BackColor = Color.DarkGray;
             SidePanel.BorderStyle = BorderStyle.Fixed3D;
             SidePanel.CausesValidation = false;
+            SidePanel.Controls.Add(cursorStyleCombo);
+            SidePanel.Controls.Add(BlinkBox);
             SidePanel.Controls.Add(ReconnectButton);
             SidePanel.Controls.Add(FullRedrawButton);
             SidePanel.Controls.Add(DiagButton);
@@ -90,10 +94,42 @@ namespace PT200Emulator_WinForms
             SidePanel.Size = new Size(175, 450);
             SidePanel.TabIndex = 2;
             // 
+            // cursorStyleCombo
+            // 
+            cursorStyleCombo.FormattingEnabled = true;
+            cursorStyleCombo.Location = new Point(3, 308);
+            cursorStyleCombo.Name = "cursorStyleCombo";
+            cursorStyleCombo.Size = new Size(104, 23);
+            cursorStyleCombo.TabIndex = 16;
+            cursorStyleCombo.SelectedIndexChanged += cursorStyleCombo_SelectedIndexChanged;
+            // 
+            // BlinkBox
+            // 
+            BlinkBox.AutoSize = true;
+            BlinkBox.Location = new Point(113, 312);
+            BlinkBox.Name = "BlinkBox";
+            BlinkBox.Size = new Size(52, 19);
+            BlinkBox.TabIndex = 15;
+            BlinkBox.Text = "Blink";
+            BlinkBox.UseVisualStyleBackColor = true;
+            BlinkBox.CheckedChanged += BlinkBox_CheckedChanged;
+            // 
+            // ReconnectButton
+            // 
+            ReconnectButton.Anchor = AnchorStyles.Left;
+            ReconnectButton.Location = new Point(86, 233);
+            ReconnectButton.Name = "ReconnectButton";
+            ReconnectButton.Size = new Size(75, 23);
+            ReconnectButton.TabIndex = 14;
+            ReconnectButton.TabStop = false;
+            ReconnectButton.Text = "Reconnect";
+            ReconnectButton.UseVisualStyleBackColor = true;
+            ReconnectButton.Click += ReconnectButton_Click;
+            // 
             // FullRedrawButton
             // 
             FullRedrawButton.Anchor = AnchorStyles.Left;
-            FullRedrawButton.Location = new Point(92, 294);
+            FullRedrawButton.Location = new Point(92, 279);
             FullRedrawButton.Name = "FullRedrawButton";
             FullRedrawButton.Size = new Size(76, 23);
             FullRedrawButton.TabIndex = 13;
@@ -105,7 +141,7 @@ namespace PT200Emulator_WinForms
             // DiagButton
             // 
             DiagButton.Anchor = AnchorStyles.Left;
-            DiagButton.Location = new Point(3, 294);
+            DiagButton.Location = new Point(3, 279);
             DiagButton.Name = "DiagButton";
             DiagButton.Size = new Size(86, 23);
             DiagButton.TabIndex = 12;
@@ -156,6 +192,7 @@ namespace PT200Emulator_WinForms
             HostTextBox.TabIndex = 8;
             HostTextBox.TabStop = false;
             HostTextBox.Text = "localhost";
+            HostTextBox.TextChanged += HostTextBox_TextChanged;
             // 
             // LogLevelCombo
             // 
@@ -202,7 +239,7 @@ namespace PT200Emulator_WinForms
             rbGreen.Name = "rbGreen";
             rbGreen.Size = new Size(51, 19);
             rbGreen.TabIndex = 0;
-            rbGreen.Text = "Grön";
+            rbGreen.Text = "Green";
             rbGreen.UseVisualStyleBackColor = true;
             rbGreen.CheckedChanged += rbGreen_CheckedChanged;
             // 
@@ -213,7 +250,7 @@ namespace PT200Emulator_WinForms
             rbColor.Name = "rbColor";
             rbColor.Size = new Size(48, 19);
             rbColor.TabIndex = 4;
-            rbColor.Text = "Färg";
+            rbColor.Text = "Color";
             rbColor.UseVisualStyleBackColor = true;
             rbColor.CheckedChanged += rbColor_CheckedChanged;
             // 
@@ -225,7 +262,7 @@ namespace PT200Emulator_WinForms
             rbBlue.Name = "rbBlue";
             rbBlue.Size = new Size(41, 19);
             rbBlue.TabIndex = 1;
-            rbBlue.Text = "Blå";
+            rbBlue.Text = "Blue";
             rbBlue.UseVisualStyleBackColor = true;
             rbBlue.CheckedChanged += rbBlue_CheckedChanged;
             // 
@@ -249,7 +286,7 @@ namespace PT200Emulator_WinForms
             rbWhite.Name = "rbWhite";
             rbWhite.Size = new Size(39, 19);
             rbWhite.TabIndex = 2;
-            rbWhite.Text = "Vit";
+            rbWhite.Text = "White";
             rbWhite.UseVisualStyleBackColor = true;
             rbWhite.CheckedChanged += rbWhite_CheckedChanged;
             // 
@@ -267,7 +304,7 @@ namespace PT200Emulator_WinForms
             // messageLabel
             // 
             messageLabel.Name = "messageLabel";
-            messageLabel.Size = new Size(70, 17);
+            messageLabel.Size = new Size(130, 17);
             messageLabel.Spring = true;
             messageLabel.Text = "Ready...";
             messageLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -296,8 +333,8 @@ namespace PT200Emulator_WinForms
             // 
             systemLabel.AutoSize = false;
             systemLabel.Name = "systemLabel";
-            systemLabel.Size = new Size(90, 17);
-            systemLabel.Text = "SYSTEM";
+            systemLabel.Size = new Size(30, 17);
+            systemLabel.Text = "RDY";
             // 
             // g0g1Label
             // 
@@ -360,18 +397,6 @@ namespace PT200Emulator_WinForms
             layoutPanel.Size = new Size(800, 450);
             layoutPanel.TabIndex = 3;
             // 
-            // ReconnectButton
-            // 
-            ReconnectButton.Anchor = AnchorStyles.Left;
-            ReconnectButton.Location = new Point(86, 233);
-            ReconnectButton.Name = "ReconnectButton";
-            ReconnectButton.Size = new Size(75, 23);
-            ReconnectButton.TabIndex = 14;
-            ReconnectButton.TabStop = false;
-            ReconnectButton.Text = "Reconnect";
-            ReconnectButton.UseVisualStyleBackColor = true;
-            ReconnectButton.Click += ReconnectButton_Click;
-            // 
             // PT200
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -421,5 +446,7 @@ namespace PT200Emulator_WinForms
         private TableLayoutPanel layoutPanel;
         private Button FullRedrawButton;
         private Button ReconnectButton;
+        private ComboBox cursorStyleCombo;
+        private CheckBox BlinkBox;
     }
 }
