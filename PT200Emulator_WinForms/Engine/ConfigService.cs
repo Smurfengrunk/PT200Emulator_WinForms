@@ -76,7 +76,7 @@ namespace PT200Emulator_WinForms.Engine
             {
                 var json = File.ReadAllText(filePath);
                 var cfg = JsonSerializer.Deserialize<UiConfig>(json, JsonCfg.Options) ?? new UiConfig();
-                Serilog.Log.Debug($"[UiConfig Load] Loaded values: Theme={cfg.DisplayTheme}, Format={cfg.ScreenFormat}, LogLevel={cfg.DefaultLogLevel}, Cursor={cfg.CursorStylePreference}");
+                Serilog.Log.Debug(LocalizationProvider.Current.Get("cfg.load.dbg"), cfg.DisplayTheme, cfg.ScreenFormat, cfg.DefaultLogLevel, cfg.CursorStylePreference);
                 return cfg;
             }
             return new UiConfig();

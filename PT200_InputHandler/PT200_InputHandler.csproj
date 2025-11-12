@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PT200_InputHandler</PackageId>
+    <Version>1.2.1</Version>
+    <Authors>Tomas Lundqvist</Authors>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- Alla resurser som ska packas -->
+  <ItemGroup>
+    <None
+        Include="Data\**\*.*"
+        Pack="true"
+        PackagePath="contentFiles\any\any\data"
+        PackageCopyToOutput="true"
+        CopyToOutputDirectory="PreserveNewest" />
+
+    <None
+        Include="Resources\**\*.*"
+        Pack="true"
+        PackagePath="contentFiles\any\any\resources"
+        PackageCopyToOutput="true"
+        CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Endast om du verkligen har en InputHandler.targets -->
+  <ItemGroup>
+    <None
+        Include="buildTransitive\PT200_InputHandler.targets"
+        Pack="true"
+        PackagePath="buildTransitive\PT200_InputHandler.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

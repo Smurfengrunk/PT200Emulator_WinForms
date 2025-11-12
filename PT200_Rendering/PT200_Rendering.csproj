@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PT200_Rendering</PackageId>
+    <Version>1.2.8.1</Version>
+    <Authors>Tomas Lundqvist</Authors>
+    <Company></Company>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Telnet" Version="0.13.1" />
+  </ItemGroup>
+
+  <!-- Endast None, med rätt case och Pack=true -->
+  <ItemGroup>
+    <None Include="Data\**\*.*" Pack="true" PackagePath="contentFiles\any\any\data" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
+
+    <None Include="Resources\**\*.*" Pack="true" PackagePath="contentFiles\any\any\resources" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="buildTransitive\PT200_Rendering.targets" Pack="true" PackagePath="buildTransitive\PT200_Rendering.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PT200_InputHandler\PT200_InputHandler.csproj" />
+    <ProjectReference Include="..\PT200_Logging\PT200_Logging.csproj" />
+    <ProjectReference Include="..\PT200_Parser\PT200_Parser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

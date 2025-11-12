@@ -20,9 +20,10 @@ namespace PT200Emulator_WinForms
         private System.Windows.Forms.Timer _clockTimer = new();
         private StatusLineController statusController;
         private Transport _transport;
+        private TerminalParser _parser => _transport.GetParser();
         private TerminalCtrl terminalCtrl;
         private CancellationTokenSource _cts = new();
-        private static TerminalState terminalState = new TerminalState();
+        private static TerminalState terminalState;
         private readonly LoggingLevelSwitch _levelSwitch;
         private IInputMapper _inputMapper;
         private PT200_InputHandler.PT200_InputHandler _inputHandler;
@@ -32,6 +33,7 @@ namespace PT200Emulator_WinForms
         private UiConfig _uiConfig;
         private BindingSource _uiConfigBinding;
         private bool _initializing = false;
+        private VisualAttributeManager _visualAttributeManager;
         public PT200(LoggingLevelSwitch levelSwitch)
         {
             InitializeComponent();
@@ -90,17 +92,19 @@ namespace PT200Emulator_WinForms
             };
 
             InitStatusTimers();
-            this.LogDebug($"Config path {Path.Combine(Application.UserAppDataPath, "config")}");
             _configService = new ConfigService(Path.Combine(Application.UserAppDataPath, "config"));
             _transportConfig = _configService.LoadTransportConfig();
             HostTextBox.Text = _transportConfig.Host;
             PortTextBox.Text = _transportConfig.Port.ToString();
             _uiConfig = _configService.LoadUiConfig();
             _uiConfigBinding = new BindingSource { DataSource = _uiConfig };
-            terminalState.screenFormat = _uiConfig.ScreenFormat;
-            terminalState.SetScreenFormat();
 
             _transport = new Transport(statusController, terminalCtrl);
+            terminalState = _parser.termState;
+            terminalState._screenFormat = _uiConfig.ScreenFormat;
+            terminalState.SetScreenFormat();
+            _visualAttributeManager = _parser.visualAttributeManager;
+            _visualAttributeManager.DisplayTypeChanged += () => terminalState.Display = _uiConfig.DisplayTheme;
 
             terminalHost.Name = "terminalHost";
             terminalHost.Dock = DockStyle.Fill;
@@ -109,8 +113,7 @@ namespace PT200Emulator_WinForms
             terminalCtrl = new TerminalCtrl(_transport, _uiConfig);
             terminalCtrl.SuspendLayout();
             terminalCtrl.Margin = new Padding(3, 3, 0, 0);
-            this.LogDebug("Terminal Control initialized and buffer attached.");
-            this.LogErr($"Terminal Control margin set to: {terminalCtrl.Margin}");
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("log.terminal.init"));
             terminalCtrl.Dock = DockStyle.Fill;
             terminalHost.Controls.Add(terminalCtrl);
 
@@ -126,13 +129,9 @@ namespace PT200Emulator_WinForms
             layoutPanel.PerformLayout();
             this.PerformLayout();
             ResizeWindowToFit(terminalState.Columns, terminalState.Rows);
-            this.LogDebug("Terminal Control size set to: {Size}", terminalCtrl.Size);
-            this.LogDebug($"MainForm ClientSize: {this.ClientSize}, SidePanel: {SidePanel.Size}, statusLine: {statusLine.Size}");
-            this.LogDebug("Terminal Control location set to: {Location}", terminalCtrl.Location);
 
             this.KeyPreview = true;
             this.KeyUp += MainForm_KeyUp;
-            this.LogDebug("MainForm KeyUp event handler attached.");
 
             var formats = Enum.GetValues(typeof(TerminalState.ScreenFormat))
                               .Cast<TerminalState.ScreenFormat>()
@@ -175,6 +174,7 @@ namespace PT200Emulator_WinForms
             _inputMapper = _inputHandler.inputMapper;
             terminalCtrl.InputMapper = _inputMapper;
             FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
+            InitLocalizedUI();
             terminalCtrl.ResumeLayout(true);
             terminalCtrl.Focus();
         }
@@ -222,17 +222,15 @@ namespace PT200Emulator_WinForms
         {
             if (ScreenFormatCombo.SelectedValue is TerminalState.ScreenFormat format)
             {
-                terminalState.screenFormat = format;
+                terminalState._screenFormat = format;
                 terminalState.SetScreenFormat();
                 terminalCtrl.ChangeFormat(terminalState.Columns, terminalState.Rows);
                 if (terminalState.Columns >= 132) statusController.SetSystemReady(true, true);
                 else statusController.SetSystemReady(true, false);
-                //terminalCtrl.ForceRePaint();
                 layoutPanel.PerformLayout();
                 this.PerformLayout();
                 ResizeWindowToFit(terminalState.Columns, terminalState.Rows); // beräknar storlek baserat på layout
                 _uiConfig.ScreenFormat = format;
-                this.LogDebug($"Screen format changed to {format}, terminal resized to {terminalCtrl.Size}");
                 statusController.SetSystemReady((onlineLabel.Text == "ONLINE") ? true : false, (terminalState.Columns >= 132) ? true : false);
             }
         }
@@ -313,14 +311,13 @@ namespace PT200Emulator_WinForms
                     // Rita en svart linje till vänster om fältet
                     e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
                     e.Graphics.DrawLine(Pens.Red, r.Left, r.Top, r.Left, r.Bottom - 1);
-                    this.LogDebug($"Drew line at {r.Left},{r.Top} to {r.Left},{r.Bottom - 1} with Pen {Pens.Black.Color}");
                 }
             }
         }
 
         protected override async void OnLoad(EventArgs e)
         {
-            this.LogDebug("Form loaded, starting transport connection...");
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("log.app.form.loaded"));
             base.OnLoad(e);
             await _transport.Connect(_cts.Token, _transportConfig.Host, _transportConfig.Port);
             statusController.SetSystemReady(true, (terminalState.Columns >= 132) ? true : false);
@@ -335,7 +332,7 @@ namespace PT200Emulator_WinForms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            this.LogDebug("Closing application");
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("log.app.closing"));
             _configService.SaveTransportConfig(_transportConfig);
             _configService.SaveUiConfig(_uiConfig);
             _cts.Cancel();
@@ -345,9 +342,7 @@ namespace PT200Emulator_WinForms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            this.LogDebug($"MainForm shown. ClientSize: {this.ClientSize}, layoutPanel size: {layoutPanel.Size}, terminalCtrl size: {terminalCtrl.Size}");
         }
-
 
         public void ResizeWindowToFit(int cols, int rows)
         {
@@ -363,19 +358,18 @@ namespace PT200Emulator_WinForms
             this.MinimumSize = new Size(totalWidth, totalHeight);
             this.ClientSize = new Size(totalWidth, totalHeight);
 
-            this.LogDebug($"Resized window to fit {cols}x{rows} chars → {totalWidth}x{totalHeight}px");
         }
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            this.LogDebug("Connect button clicked at {Time}", DateTime.Now);
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.connect", DateTime.Now));
             _ = _transport.Connect(_cts.Token);
 
         }
 
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
-            this.LogDebug("Disconnect button clicked at {Time}", DateTime.Now);
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.disconnect", DateTime.Now));
             _ = _transport.Disconnect();
         }
 
@@ -387,7 +381,7 @@ namespace PT200Emulator_WinForms
 
         private void ReconnectButton_Click(object sender, EventArgs e)
         {
-            this.LogDebug("Reconnect button clicked at {Time}", DateTime.Now);
+            this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.reconnect", DateTime.Now));
             _ = _transport.Reconnect(_cts.Token);
 
         }
@@ -418,6 +412,21 @@ namespace PT200Emulator_WinForms
         {
             _uiConfig.CursorBlink = terminalState.CursorBlink = (BlinkBox.Checked) ? true : false;
             terminalCtrl.SetCursorStyle(_uiConfig.CursorStylePreference, _uiConfig.CursorBlink);
+        }
+
+        private void InitLocalizedUI()
+        {
+            rbAmber.Text = Engine.LocalizationProvider.Current.Get("ui.color.amber");
+            rbBlue.Text = Engine.LocalizationProvider.Current.Get("ui.color.blue");
+            rbColor.Text = Engine.LocalizationProvider.Current.Get("ui.color.color");
+            rbGreen.Text = Engine.LocalizationProvider.Current.Get("ui.color.green");
+            rbWhite.Text = Engine.LocalizationProvider.Current.Get("ui.color.white");
+            ConnectButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.connect");
+            DisconnectButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.disconnect");
+            ReconnectButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.reconnect");
+            BlinkBox.Text = Engine.LocalizationProvider.Current.Get("ui.blinkbox.label");
+            FullRedrawButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.fullredraw");
+            DiagButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.diag");
         }
     }
 

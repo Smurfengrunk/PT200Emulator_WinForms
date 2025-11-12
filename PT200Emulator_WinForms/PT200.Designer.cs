@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using PT200Emulator_WinForms.Engine;
+using System.Windows.Forms;
 
 namespace PT200Emulator_WinForms
 {
@@ -88,10 +89,10 @@ namespace PT200Emulator_WinForms
             SidePanel.Dock = DockStyle.Left;
             SidePanel.Location = new Point(0, 0);
             SidePanel.Margin = new Padding(0);
-            SidePanel.MinimumSize = new Size(175, 450);
+            SidePanel.MinimumSize = new Size(180, 450);
             SidePanel.Name = "SidePanel";
             layoutPanel.SetRowSpan(SidePanel, 2);
-            SidePanel.Size = new Size(175, 450);
+            SidePanel.Size = new Size(180, 450);
             SidePanel.TabIndex = 2;
             // 
             // cursorStyleCombo
@@ -134,7 +135,7 @@ namespace PT200Emulator_WinForms
             FullRedrawButton.Size = new Size(76, 23);
             FullRedrawButton.TabIndex = 13;
             FullRedrawButton.TabStop = false;
-            FullRedrawButton.Text = "Full redraw";
+            FullRedrawButton.Text = "Fullredraw";
             FullRedrawButton.UseVisualStyleBackColor = true;
             FullRedrawButton.Click += FullRedrawButton_Click;
             // 
@@ -146,7 +147,7 @@ namespace PT200Emulator_WinForms
             DiagButton.Size = new Size(86, 23);
             DiagButton.TabIndex = 12;
             DiagButton.TabStop = false;
-            DiagButton.Text = "Diag overlay";
+            DiagButton.Text = "Diag";
             DiagButton.UseVisualStyleBackColor = true;
             DiagButton.Click += DiagButton_Click;
             // 
@@ -237,7 +238,7 @@ namespace PT200Emulator_WinForms
             rbGreen.ForeColor = Color.LimeGreen;
             rbGreen.Location = new Point(0, 7);
             rbGreen.Name = "rbGreen";
-            rbGreen.Size = new Size(51, 19);
+            rbGreen.Size = new Size(56, 19);
             rbGreen.TabIndex = 0;
             rbGreen.Text = "Green";
             rbGreen.UseVisualStyleBackColor = true;
@@ -248,7 +249,7 @@ namespace PT200Emulator_WinForms
             rbColor.AutoSize = true;
             rbColor.Location = new Point(0, 57);
             rbColor.Name = "rbColor";
-            rbColor.Size = new Size(48, 19);
+            rbColor.Size = new Size(54, 19);
             rbColor.TabIndex = 4;
             rbColor.Text = "Color";
             rbColor.UseVisualStyleBackColor = true;
@@ -260,7 +261,7 @@ namespace PT200Emulator_WinForms
             rbBlue.ForeColor = Color.Blue;
             rbBlue.Location = new Point(78, 32);
             rbBlue.Name = "rbBlue";
-            rbBlue.Size = new Size(41, 19);
+            rbBlue.Size = new Size(48, 19);
             rbBlue.TabIndex = 1;
             rbBlue.Text = "Blue";
             rbBlue.UseVisualStyleBackColor = true;
@@ -284,7 +285,7 @@ namespace PT200Emulator_WinForms
             rbWhite.ForeColor = Color.White;
             rbWhite.Location = new Point(0, 32);
             rbWhite.Name = "rbWhite";
-            rbWhite.Size = new Size(39, 19);
+            rbWhite.Size = new Size(56, 19);
             rbWhite.TabIndex = 2;
             rbWhite.Text = "White";
             rbWhite.UseVisualStyleBackColor = true;
@@ -296,9 +297,9 @@ namespace PT200Emulator_WinForms
             statusLine.BackColor = Color.LimeGreen;
             statusLine.Font = new Font("Consolas", 10F);
             statusLine.Items.AddRange(new ToolStripItem[] { messageLabel, logLabel, onlineLabel, dsrLabel, systemLabel, g0g1Label, insertLabel, scrollLockLabel, capsLockLabel, numLockLabel, clockLabel });
-            statusLine.Location = new Point(175, 428);
+            statusLine.Location = new Point(180, 428);
             statusLine.Name = "statusLine";
-            statusLine.Size = new Size(625, 22);
+            statusLine.Size = new Size(620, 22);
             statusLine.TabIndex = 1;
             // 
             // messageLabel
@@ -383,7 +384,7 @@ namespace PT200Emulator_WinForms
             // 
             layoutPanel.BackColor = Color.Black;
             layoutPanel.ColumnCount = 2;
-            layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 175F));
+            layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 180F));
             layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             layoutPanel.Controls.Add(SidePanel, 0, 0);
             layoutPanel.Controls.Add(statusLine, 1, 1);

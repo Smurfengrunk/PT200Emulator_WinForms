@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Resources;
+using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 using System.Text;
 using System.Windows.Forms;
@@ -128,17 +129,6 @@ namespace PT200Emulator_WinForms.Controls
             _transport = transport;
             _uiConfig = uiConfig;
 
-            _throttleTimer = new System.Windows.Forms.Timer { Interval = 33 }; // ~30 fps
-            _throttleTimer.Tick += (s, e) =>
-            {
-                if (_pendingInvalidate)
-                {
-                    base.Invalidate();
-                    _pendingInvalidate = false;
-                }
-            };
-            _throttleTimer.Start();
-
             // Monospace-font
             _font = new Font("Consolas", 12, FontStyle.Regular, GraphicsUnit.Pixel);
 
@@ -147,12 +137,6 @@ namespace PT200Emulator_WinForms.Controls
             this.Width = _charWidth * _parser.Screenbuffer.Cols;
             this.Height = _charHeight * _parser.Screenbuffer.Rows;
 
-            /*using (var g = this.CreateGraphics())
-            {
-                var size = g.MeasureString("W", _font, int.MaxValue, StringFormat.GenericTypographic);
-                _charWidth = (int)Math.Ceiling(size.Width);
-                _charHeight = (int)Math.Ceiling(size.Height);
-            }*/
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             this.TabStop = true;
@@ -184,7 +168,8 @@ namespace PT200Emulator_WinForms.Controls
                 _buffer.BufferUpdated += () =>
                 {
                     if (this.IsHandleCreated && !this.IsDisposed)
-                        _pendingInvalidate = true;
+                        //_pendingInvalidate = true;
+                        this.Invalidate();
                 };
             }
         }
@@ -198,7 +183,7 @@ namespace PT200Emulator_WinForms.Controls
 
             if (_buffer == null)
             {
-                this.LogDebug("Buffer is null, skipping OnPaint");
+                this.LogDebug(Engine.LocalizationProvider.Current.Get("log.render.buffer.null"));
                 return;
             }
 
@@ -211,11 +196,7 @@ namespace PT200Emulator_WinForms.Controls
             _core.Render(_buffer, _renderTarget);
 
             // Rita caret ovanpå
-            if (_renderTarget._caretVisible)
-            {
-                _renderTarget.SetCaret(_buffer.CursorRow, _buffer.CursorCol);
-                _renderTarget.DrawCaret(e.Graphics, ForeColor);
-            }
+            if (_renderTarget._caretVisible) _renderTarget.DrawCaret(e.Graphics, ForeColor);
 
             // Overlay/debug
             if (ShowDiagnosticOverlay)
@@ -229,13 +210,7 @@ namespace PT200Emulator_WinForms.Controls
         public void ChangeFormat(int cols, int rows)
         {
             _buffer.Resize(rows, cols);
-            this.LogDebug($"ChangeFormat called: cols={cols}, rows={rows}, content of buffer cell (1,1)='{_buffer.GetCell(1, 1).Char}'. Calling this.PerformLayout.");
             this.Invalidate();
-
-            this.LogDebug($"charWidth: {_charWidth}, charHeight: {_charHeight}");
-            this.LogDebug($"Expected size: {_charWidth * cols} x {_charHeight * rows}");
-            this.LogDebug($"Actual ClientSize: {this.ClientSize.Width} x {this.ClientSize.Height}");
-            this.LogDebug($"Actual Size: {this.Size.Width} x {this.Size.Height}");
         }
 
         protected override void OnResize(EventArgs e)
@@ -269,15 +244,34 @@ namespace PT200Emulator_WinForms.Controls
 
         protected override bool IsInputKey(Keys keyData)
         {
-            // Gör så att piltangenter, Tab osv. inte “äts upp” av WinForms
-            return true;
+            if (keyData == Keys.Back || keyData == Keys.Tab)
+                return true;
+            return base.IsInputKey(keyData);
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            // Hoppa ur om det inte är ett skrivbart tecken
+            if (char.IsControl(e.KeyChar)) return;
+
+            base.OnKeyPress(e);
+
+            if ("åäöÅÄÖ".Contains(e.KeyChar))
+            {
+                var mapped = MapSwedishChar(e.KeyChar);
+                _transport.Send(new byte[] { mapped });
+            }
+            else
+            {
+                // Hantera svenska tecken eller skicka vidare som text
+                var bytes = InputMapper.MapText(e.KeyChar.ToString());
+                _transport.Send(bytes);
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (IsPrintableKey(e.KeyCode))
-                return;
-            base.OnKeyDown(e);
+            if (IsPrintableKey(e.KeyCode)) return;
 
             // Översätt WinForms KeyEventArgs till din egen KeyEvent
             if (KeyToScanCode.TryGetValue(e.KeyCode, out int scanCode))
@@ -289,21 +283,26 @@ namespace PT200Emulator_WinForms.Controls
 
                 var keyEvent = new KeyEvent(scanCode, mods);
                 var bytes = InputMapper.MapKey(keyEvent);
-                if (bytes == null)
-                {
-                    switch (e.KeyCode)
-                    {
-                        case Keys.Up:
-                            this.LogDebug("No mapping found – sending fallback for Up");
-                            bytes = new byte[] { 0x1B, (byte)'A' }; // eller PT200-specifik sekvens
-                            break;
-                            // fler fall...
-                    }
-                }
-                this.LogDebug($"Mapped to bytes: {(bytes != null ? BitConverter.ToString(bytes) : "null")}");
+
                 if (bytes != null)
-                    _transport.Send(bytes);
-                this.LogDebug($"[TerminalCtrl.OnKeyDown] KeyValue: {e.KeyValue}, KeyData {e.KeyData}, Key event: scan code {keyEvent.ScanCode}, Modifiers {keyEvent.Modifiers}");
+                {
+                    if (e.KeyCode == Keys.Back)
+                    {
+                        e.SuppressKeyPress = true;
+                        _buffer.Backspace();
+                        _transport.Send(new byte[] { 0x08 });
+                    }
+                    else _transport.Send(bytes);
+                }
+                else if (e.KeyCode == Keys.Enter)
+                {
+                    this.LogDebug("Sending enter as \\r\\n");
+                    e.SuppressKeyPress = true;
+                    _transport.Send(Encoding.ASCII.GetBytes("\r\n"));
+                }
+                else if (e.KeyCode == Keys.Tab) _transport.Send(new byte[] { 0x09 });
+                else if (e.KeyCode == Keys.Delete) _transport.Send(new byte[] { 0x7F });
+                base.OnKeyDown(e);
             }
         }
 
@@ -313,25 +312,11 @@ namespace PT200Emulator_WinForms.Controls
                 (key >= Keys.A && key <= Keys.Z) ||
                 (key >= Keys.D0 && key <= Keys.D9) ||
                 key == Keys.Space ||
-                key == Keys.Enter ||
-                key == Keys.Back ||
                 key == Keys.OemPeriod ||
                 key == Keys.Oemcomma ||
                 key == Keys.OemMinus ||
                 key == Keys.Oemplus ||
                 (key >= Keys.Oem1 && key <= Keys.Oem102); // täcker åäö och andra symboler
-        }
-
-        protected override void OnKeyPress(KeyPressEventArgs e)
-        {
-            base.OnKeyPress(e);
-
-            var bytes = InputMapper.MapText(e.KeyChar.ToString());
-            if (bytes != null)
-            {
-                _transport.Send(bytes);
-                _buffer.MarkDirty();
-            }
         }
 
         public void UpdateBufferFromSize()
@@ -341,7 +326,6 @@ namespace PT200Emulator_WinForms.Controls
             int cols = this.ClientSize.Width / _charWidth;
             int rows = this.ClientSize.Height / _charHeight;
 
-            this.LogDebug($"Buffer resized to {cols}x{rows} based on ClientSize {this.ClientSize.Width}x{this.ClientSize.Height}");
             _buffer.Resize(rows, cols);
         }
 
@@ -372,6 +356,21 @@ namespace PT200Emulator_WinForms.Controls
             // Dividera med antalet tecken för att få "advance width"
             return size.Width / columns;
         }
+
+        private static byte MapSwedishChar(char c)
+        {
+            return c switch
+            {
+                'Å' => (byte)'[',  // 0x5B
+                'Ö' => (byte)'\\', // 0x5C
+                'Ä' => (byte)']',  // 0x5D
+                'å' => (byte)'{',  // 0x7B
+                'ö' => (byte)'|',  // 0x7C
+                'ä' => (byte)'}',  // 0x7D
+                _ => (byte)c
+            };
+        }
+
     }
 
     internal class WinFormsRenderTarget : IRenderTarget
@@ -400,14 +399,7 @@ namespace PT200Emulator_WinForms.Controls
             _fore = fore;
             _back = back;
 
-            /*Size size = TextRenderer.MeasureText("W", _font,
-                new Size(int.MaxValue, int.MaxValue),
-                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix);
-
-            _charWidth = size.Width; // justera med 1 pixel
-            _charHeight = size.Height;*/
-            if (_font != null) this.LogDebug($"WinFormsRenderTarget initialized with char size {_charWidth}x{_charHeight} and Font {_font.Name} size {_font.Size}");
-            else this.LogWarning("Font is null in WinFormsRenderTarget constructor!");
+            if (_font == null) this.LogWarning(Engine.LocalizationProvider.Current.Get("log.render.font.null"));
         }
 
         public void Clear() => Graphics.Clear(_back);
@@ -548,7 +540,6 @@ namespace PT200Emulator_WinForms.Controls
                 _control.Invalidate(); // trigga omritning
             };
             if (_cursorBlink) _blinkTimer.Start();
-            this.LogDebug($"[WinFormsCaretController] Cursor style {_style}");
         }
 
         public void SetCaretPosition(int row, int col)
@@ -557,7 +548,6 @@ namespace PT200Emulator_WinForms.Controls
             _col = col;
             _renderTarget.SetCaret(_row, _col);
             _control.Invalidate();
-            this.LogDebug($"[SetCaretPosition] Cursor style {_style}");
         }
 
         public void SetCursorStyle(IRenderTarget.CursorStyle style, bool blink)
@@ -573,7 +563,6 @@ namespace PT200Emulator_WinForms.Controls
                     _renderTarget._caretVisible = true;
                 }
             _control.Invalidate();
-            this.LogDebug($"[SetCursorStyle] Cursor style {_style}");
 
         }
         public void MoveCaret(int dRow, int dCol)
@@ -582,13 +571,11 @@ namespace PT200Emulator_WinForms.Controls
             _col = _col + dCol;
             _buffer.MarkDirty();
             _control.Invalidate();
-            this.LogDebug($"[MoveCaret] Cursor style {_style}");
         }
         public void Show()
         {
             _renderTarget._caretVisible = true;
             _blinkTimer.Start();
-            this.LogDebug($"[Show] Cursor style {_style}");
         }
 
         public void Hide()
@@ -596,7 +583,6 @@ namespace PT200Emulator_WinForms.Controls
             _renderTarget._caretVisible = false;
             _blinkTimer.Stop();
             _control.Invalidate();
-            this.LogDebug($"[Hide] Cursor style {_style}");
         }
     }
 }
