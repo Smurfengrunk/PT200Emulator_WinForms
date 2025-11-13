@@ -23,8 +23,6 @@
   <!-- Endast None, med rätt case och Pack=true -->
   <ItemGroup>
     <None Include="Data\**\*.*" Pack="true" PackagePath="contentFiles\any\any\data" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
-
-    <None Include="Resources\**\*.*" Pack="true" PackagePath="contentFiles\any\any\resources" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,8 @@
 ﻿
+using PT200_Logging;
 using PT200_Parser;
 using System.Diagnostics;
-using PT200_Logging;
+using System.Text;
 
 namespace PT200_Parser
 {
@@ -185,12 +186,10 @@ namespace PT200_Parser
 
         public void WriteChar(char ch)
         {
-
             var wroteRow = CursorRow;
             var wroteCol = CursorCol;
             var cell = _mainBuffer[wroteRow, wroteCol];
             var style = CurrentStyle.Clone();
-            _bsflag = false;
 
             if (ch == '\x1B') return;
             if (ch == '\b')
@@ -228,7 +227,8 @@ namespace PT200_Parser
                 _mainBuffer[wroteRow, wroteCol] = cell;
                 _chars[wroteRow, wroteCol] = ch;
 
-                AdvanceCursor();
+                if (!_bsflag) AdvanceCursor();
+                else _bsflag = false;
             }
             MarkDirty();
             if (!_updating) BufferUpdated.Invoke();
@@ -263,11 +263,16 @@ namespace PT200_Parser
             {
                 CursorCol--;
 
+                // Flytta hela svansen åt vänster
+                var sb = new StringBuilder(Cols);
+                for (int c = 0; c < Cols; c++)
+                    sb.Append(_chars[CursorRow, c]);
+                string charRow = sb.ToString();
+
                 // Radera tecknet vid den nya cursorpositionen
                 _chars[CursorRow, CursorCol] = '\0';
                 _mainBuffer[CursorRow, CursorCol].Char = '\0';
 
-                // Flytta hela svansen åt vänster
                 for (int i = CursorCol; i < Cols - 1; i++)
                 {
                     _chars[CursorRow, i] = _chars[CursorRow, i + 1];
@@ -371,13 +376,20 @@ namespace PT200_Parser
 
         private void ScrollUp()
         {
-
             // Flytta upp alla rader
             for (int r = 1; r < Rows; r++)
             {
                 for (int c = 0; c < Cols; c++)
                 {
-                    _mainBuffer[r - 1, c] = _mainBuffer[r, c];   // kopiera hela cellen
+                    _mainBuffer[r - 1, c] = new ScreenCell
+                    {
+                        Char = _mainBuffer[r, c].Char,
+                        Foreground = _mainBuffer[r, c].Foreground,
+                        Background = _mainBuffer[r, c].Background,
+                        Style = _mainBuffer[r, c].Style
+                    };
+                    _chars[r - 1, c] = _chars[r, c];
+                    ZoneAttributes[r - 1, c] = ZoneAttributes[r, c];
                 }
             }
 
@@ -391,12 +403,12 @@ namespace PT200_Parser
                     Background = CurrentStyle.Background,
                     Style = ZoneAttributes[Rows - 1, c] ?? new StyleInfo()
                 };
+                _chars[Rows - 1, c] = ' ';
+                ZoneAttributes[Rows - 1, c] = new StyleInfo();
             }
 
             // Markera hela bufferten som ändrad
-            for (int r = 0; r < Rows; r++)
-                for (int c = 0; c < Cols; c++)
-                    MarkDirty();
+            MarkDirty();
 
             CursorRow = Rows - 1;
             Scrolled?.Invoke();

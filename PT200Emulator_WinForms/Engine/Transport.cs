@@ -89,6 +89,7 @@ namespace PT200Emulator_WinForms.Engine
         {
             if (byteStream == null) return;
             byteStream.WriteAsync(data);
+            //this.LogDebug($"Sending {data.Length} bytes");
         }
 
         public async Task Disconnect()

@@ -428,7 +428,7 @@ namespace PT200Emulator_WinForms
         private ComboBox ScreenFormatCombo;
         private TextBox PortTextBox;
         private TextBox HostTextBox;
-        private ToolStripStatusLabel toolStripStatusLabel1;
+        //private ToolStripStatusLabel toolStripStatusLabel1;
         private StatusStrip statusLine;
         private ToolStripStatusLabel messageLabel;
         private ToolStripStatusLabel onlineLabel;

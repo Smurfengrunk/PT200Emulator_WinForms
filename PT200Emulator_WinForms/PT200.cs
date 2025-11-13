@@ -181,35 +181,35 @@ namespace PT200Emulator_WinForms
 
         private void rbGreen_CheckedChanged(object sender, EventArgs e)
         {
-            RePaint(Color.LimeGreen, DimColor(Color.LimeGreen), Color.Black);
+            RePaint(StyleInfo.Color.Green, DimColor(Color.LimeGreen), StyleInfo.Color.DarkGreen);
             _uiConfig.DisplayTheme = TerminalState.DisplayType.Green;
         }
 
         private void rbAmber_CheckedChanged(object sender, EventArgs e)
         {
-            RePaint(Color.Orange, DimColor(Color.Orange), Color.Black);
+            RePaint(StyleInfo.Color.Yellow, DimColor(Color.Orange), StyleInfo.Color.DarkYellow);
             _uiConfig.DisplayTheme = TerminalState.DisplayType.Amber;
         }
 
         private void rbWhite_CheckedChanged(object sender, EventArgs e)
         {
-            RePaint(Color.White, DimColor(Color.White), Color.Black);
+            RePaint(StyleInfo.Color.White, DimColor(Color.White), StyleInfo.Color.Black);
             _uiConfig.DisplayTheme = TerminalState.DisplayType.White;
         }
 
         private void rbBlue_CheckedChanged(object sender, EventArgs e)
         {
-            RePaint(Color.LightBlue, DimColor(Color.LightBlue), Color.Black);
+            RePaint(StyleInfo.Color.Blue, DimColor(Color.FromArgb(180, 200, 230)), StyleInfo.Color.Black);
             _uiConfig.DisplayTheme = TerminalState.DisplayType.Blue;
         }
 
         private void rbColor_CheckedChanged(object sender, EventArgs e)
         {
-            RePaint(Color.Wheat, DimColor(Color.Wheat), Color.Black);
+            RePaint(StyleInfo.Color.Default, DimColor(Color.Wheat), StyleInfo.Color.Black);
             _uiConfig.DisplayTheme = TerminalState.DisplayType.FullColor;
         }
 
-        public Color DimColor(Color color, double Factor = 0.5)
+        public Color DimColor(Color color, double Factor = 0.75)
         {
             return Color.FromArgb(
                 color.A,
@@ -265,16 +265,16 @@ namespace PT200Emulator_WinForms
         }
 
 
-        private void RePaint(Color TextColor, Color StatusBarColor, Color BackColor)
+        private void RePaint(StyleInfo.Color TextColor, Color StatusBarColor, StyleInfo.Color BackColor)
         {
             statusLine.BackColor = StatusBarColor;  // statusraden kan fortfarande följa textfärgen
-            statusLine.ForeColor = BackColor;       // och textfärgen inverterad
+            statusLine.ForeColor = RenderCore.TranslateColor(BackColor);       // och textfärgen inverterad
             numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
             capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
             scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
             insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
 
-            terminalCtrl.RePaint(TextColor, BackColor);
+            terminalCtrl.RePaint(RenderCore.TranslateColor(TextColor), RenderCore.TranslateColor(BackColor));
         }
 
         public void UpdateStatus(string text)

@@ -13,27 +13,12 @@
 
   <!-- Alla resurser som ska packas -->
   <ItemGroup>
-    <None
-        Include="Data\**\*.*"
-        Pack="true"
-        PackagePath="contentFiles\any\any\data"
-        PackageCopyToOutput="true"
-        CopyToOutputDirectory="PreserveNewest" />
-
-    <None
-        Include="Resources\**\*.*"
-        Pack="true"
-        PackagePath="contentFiles\any\any\resources"
-        PackageCopyToOutput="true"
-        CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Data\**\*.*" Pack="true" PackagePath="contentFiles\any\any\data" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- Endast om du verkligen har en InputHandler.targets -->
   <ItemGroup>
-    <None
-        Include="buildTransitive\PT200_InputHandler.targets"
-        Pack="true"
-        PackagePath="buildTransitive\PT200_InputHandler.targets" />
+    <None Include="buildTransitive\PT200_InputHandler.targets" Pack="true" PackagePath="buildTransitive\PT200_InputHandler.targets" />
   </ItemGroup>
 
   <ItemGroup>

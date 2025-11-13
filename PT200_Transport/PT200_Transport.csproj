@@ -26,8 +26,16 @@
   <!-- Endast None, med rätt case och Pack=true -->
   <ItemGroup>
     <None Include="Data\**\*.*" Pack="true" PackagePath="contentFiles\any\any\data" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
-
-    <None Include="Resources\**\*.*" Pack="true" PackagePath="contentFiles\any\any\resources" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_inputhandler\1.2.1\contentFiles\any\any\resources\Strings.en.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_inputhandler\1.2.1\contentFiles\any\any\resources\Strings.sv.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_logging\1.2.1\contentFiles\any\any\resources\Strings.en.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_logging\1.2.1\contentFiles\any\any\resources\Strings.sv.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_parser\1.2.2\contentFiles\any\any\resources\Strings.en.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_parser\1.2.2\contentFiles\any\any\resources\Strings.sv.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_rendering\1.2.2\contentFiles\any\any\resources\Strings.en.json" />
+    <None Remove="C:\Users\tomas\.nuget\packages\pt200_rendering\1.2.2\contentFiles\any\any\resources\Strings.sv.json" />
   </ItemGroup>
 
   <ItemGroup>

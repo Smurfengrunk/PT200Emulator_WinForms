@@ -15,8 +15,6 @@ namespace PT200_Rendering
     {
         private RenderSnapshot[,] _lastFrame;
         private bool _initialized;
-        private char RawChar;
-        private Color Fg, Bg;
 
         private record struct RenderSnapshot(char RawChar, char OutChar, Color Fg, Color Bg)
         {
@@ -127,23 +125,23 @@ namespace PT200_Rendering
             target.SetCaret(buffer.CursorRow, buffer.CursorCol);
         }
 
-        private static Color TranslateColor(StyleInfo.Color color) => color switch
+        public static Color TranslateColor(StyleInfo.Color color) => color switch
         {
             StyleInfo.Color.Black => Color.Black,
-            StyleInfo.Color.DarkBlue => Color.DarkBlue,
-            StyleInfo.Color.DarkGreen => Color.DarkGreen,
+            StyleInfo.Color.Green => Color.FromArgb(0, 255, 0),
+            StyleInfo.Color.DarkGreen => Color.FromArgb(10, 15, 10),
             StyleInfo.Color.DarkCyan => Color.DarkCyan,
             StyleInfo.Color.DarkRed => Color.DarkRed,
             StyleInfo.Color.DarkMagenta => Color.DarkMagenta,
-            StyleInfo.Color.DarkYellow => Color.FromArgb(128, 128, 0),
-            StyleInfo.Color.Gray => Color.Gray,
-            StyleInfo.Color.Blue => Color.Blue,
-            StyleInfo.Color.Green => Color.LimeGreen,
+            StyleInfo.Color.Blue => Color.FromArgb(234, 242, 255),  // ljus blå text
+            StyleInfo.Color.DarkBlue => Color.FromArgb(12, 12, 30),   // mörk blå bakgrund
             StyleInfo.Color.Cyan => Color.Cyan,
             StyleInfo.Color.Red => Color.Red,
             StyleInfo.Color.Magenta => Color.Magenta,
-            StyleInfo.Color.Yellow => Color.Yellow,
-            StyleInfo.Color.White => Color.White,
+            StyleInfo.Color.DarkYellow => Color.FromArgb(26, 18, 8), // bakgrundston
+            StyleInfo.Color.Yellow => Color.FromArgb(255, 191, 0),   // text amber
+            StyleInfo.Color.Gray => Color.FromArgb(24, 24, 24),      // bakgrund
+            StyleInfo.Color.White => Color.White,                    // text
             _ => Color.Wheat
         };
     }

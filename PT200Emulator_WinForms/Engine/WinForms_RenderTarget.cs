@@ -27,14 +27,14 @@ namespace PT200Emulator_WinForms.Controls
         public int _charWidth { get; private set; }
         public int _charHeight { get; private set; }
         private ScreenBuffer _buffer;
-        private bool _pendingInvalidate;
-        private readonly System.Windows.Forms.Timer _throttleTimer;
         public bool ShowDiagnosticOverlay { get; set; } = false;
         public IInputMapper InputMapper { get; set; }
         public bool AlwaysFullRedraw { get; set; } = true;
         private bool _layoutReady = false;
         private WinFormsRenderTarget _renderTarget;
         private UiConfig _uiConfig;
+        private int inputStartCol, inputStartRow;
+        private bool inputStart = false;
 
         private static readonly Dictionary<Keys, int> KeyToScanCode = new()
         {
@@ -191,7 +191,6 @@ namespace PT200Emulator_WinForms.Controls
             _renderTarget.Graphics = e.Graphics;
             _renderTarget._buffer = _buffer;
 
-            //this.LogDebug($"[OnPaint] _renderTarget._caretVisible = {_renderTarget._caretVisible}"); // temporärt för skumma NRE
             // Rita texten
             _core.Render(_buffer, _renderTarget);
 
@@ -244,8 +243,22 @@ namespace PT200Emulator_WinForms.Controls
 
         protected override bool IsInputKey(Keys keyData)
         {
-            if (keyData == Keys.Back || keyData == Keys.Tab)
-                return true;
+            switch (keyData)
+            {
+                case Keys.Escape:
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.PageUp:
+                case Keys.PageDown:
+                case Keys.Home:
+                case Keys.End:
+                case Keys.Delete:
+                case Keys.Tab:
+                case Keys.Back:
+                    return true;
+            }
             return base.IsInputKey(keyData);
         }
 
@@ -253,6 +266,13 @@ namespace PT200Emulator_WinForms.Controls
         {
             // Hoppa ur om det inte är ett skrivbart tecken
             if (char.IsControl(e.KeyChar)) return;
+            this.LogDebug($"Key char: {e.KeyChar}");
+            if (!inputStart)
+            {
+                inputStartCol = _buffer.CursorCol + 1;
+                inputStartRow = _buffer.CursorRow;
+                inputStart = true;
+            }
 
             base.OnKeyPress(e);
 
@@ -276,6 +296,7 @@ namespace PT200Emulator_WinForms.Controls
             // Översätt WinForms KeyEventArgs till din egen KeyEvent
             if (KeyToScanCode.TryGetValue(e.KeyCode, out int scanCode))
             {
+                if (e.KeyCode == Keys.Up) this.LogDebug("Arrow up pressed");
                 var mods = KeyModifiers.None;
                 if (e.Shift) mods |= KeyModifiers.Shift;
                 if (e.Control) mods |= KeyModifiers.Ctrl;
@@ -289,14 +310,19 @@ namespace PT200Emulator_WinForms.Controls
                     if (e.KeyCode == Keys.Back)
                     {
                         e.SuppressKeyPress = true;
-                        _buffer.Backspace();
-                        _transport.Send(new byte[] { 0x08 });
+                        if (IsCursorBeyondInputStart())
+                        {
+                            this.LogDebug("Sending backspace");
+                            _buffer.Backspace();
+                            _transport.Send(new byte[] { 0x08 });
+                        }
+                        else this.LogDebug("Backspace detected but cursor position not beyond starting position");
                     }
                     else _transport.Send(bytes);
                 }
                 else if (e.KeyCode == Keys.Enter)
                 {
-                    this.LogDebug("Sending enter as \\r\\n");
+                    inputStart = false;
                     e.SuppressKeyPress = true;
                     _transport.Send(Encoding.ASCII.GetBytes("\r\n"));
                 }
@@ -304,6 +330,12 @@ namespace PT200Emulator_WinForms.Controls
                 else if (e.KeyCode == Keys.Delete) _transport.Send(new byte[] { 0x7F });
                 base.OnKeyDown(e);
             }
+        }
+
+        private bool IsCursorBeyondInputStart()
+        {
+            return _buffer.CursorRow > inputStartRow ||
+                  (_buffer.CursorRow == inputStartRow && _buffer.CursorCol >= inputStartCol);
         }
 
         private bool IsPrintableKey(Keys key)
