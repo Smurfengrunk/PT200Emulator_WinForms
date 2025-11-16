@@ -2,6 +2,7 @@
 using PT200_Logging;
 using PT200_Parser;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace PT200_Parser
@@ -289,15 +290,18 @@ namespace PT200_Parser
             }
         }
 
-        public void Delete()
+        public void Delete(int scope)
         {
             if (CursorCol < Cols) // så länge vi inte står längst till höger
             {
                 // Flytta hela svansen åt vänster från cursorpositionen
-                for (int i = CursorCol; i < Cols - 1; i++)
+                for (int j = 0; j < scope; j++)
                 {
-                    _chars[CursorRow, i] = _chars[CursorRow, i + 1];
-                    _mainBuffer[CursorRow, i].Char = _chars[CursorRow, i];
+                    for (int i = CursorCol; i < Cols - 1; i++)
+                    {
+                        _chars[CursorRow, i] = _chars[CursorRow, i + 1];
+                        _mainBuffer[CursorRow, i].Char = _chars[CursorRow, i];
+                    }
                 }
 
                 // Sätt sista cellen till blank
@@ -350,7 +354,6 @@ namespace PT200_Parser
                     break;
             }
         }
-
         private void ClearCell(int row, int col)
         {
             _chars[row, col] = ' ';

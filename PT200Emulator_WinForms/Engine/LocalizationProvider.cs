@@ -62,7 +62,7 @@ namespace PT200Emulator_WinForms.Engine
             var strmsg = strings.TryGetValue("loc.key.missing", out var msg)
                 ? msg
                 : "Missing localization key: {0}";
-            this.LogDebug(strmsg, key);
+            this.LogDebug("[LocalizationProvider.Get" + strmsg, key);
             return key;
         }
 

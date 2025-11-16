@@ -266,7 +266,7 @@ namespace PT200Emulator_WinForms.Controls
         {
             // Hoppa ur om det inte är ett skrivbart tecken
             if (char.IsControl(e.KeyChar)) return;
-            this.LogDebug($"Key char: {e.KeyChar}");
+            //this.LogDebug($"Key char: {e.KeyChar}");
             if (!inputStart)
             {
                 inputStartCol = _buffer.CursorCol + 1;
@@ -296,7 +296,6 @@ namespace PT200Emulator_WinForms.Controls
             // Översätt WinForms KeyEventArgs till din egen KeyEvent
             if (KeyToScanCode.TryGetValue(e.KeyCode, out int scanCode))
             {
-                if (e.KeyCode == Keys.Up) this.LogDebug("Arrow up pressed");
                 var mods = KeyModifiers.None;
                 if (e.Shift) mods |= KeyModifiers.Shift;
                 if (e.Control) mods |= KeyModifiers.Ctrl;
@@ -319,6 +318,7 @@ namespace PT200Emulator_WinForms.Controls
                         else this.LogDebug("Backspace detected but cursor position not beyond starting position");
                     }
                     else _transport.Send(bytes);
+                    this.LogDebug($"OnKeyDown sent {Encoding.ASCII.GetString(bytes)}");
                 }
                 else if (e.KeyCode == Keys.Enter)
                 {
@@ -328,6 +328,7 @@ namespace PT200Emulator_WinForms.Controls
                 }
                 else if (e.KeyCode == Keys.Tab) _transport.Send(new byte[] { 0x09 });
                 else if (e.KeyCode == Keys.Delete) _transport.Send(new byte[] { 0x7F });
+                this.LogDebug($"Key pressed is {((mods != KeyModifiers.None) ? mods : null)} {e.KeyCode}");
                 base.OnKeyDown(e);
             }
         }

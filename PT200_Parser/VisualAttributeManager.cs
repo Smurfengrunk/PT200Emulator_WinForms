@@ -90,12 +90,12 @@ namespace PT200_Parser
                         greenOn = false;
                         buffer.CurrentStyle.Blink = true;
                         break;
+                    case "7":
+                        buffer.CurrentStyle.ReverseVideo = true;
+                        break;
                     case ">1":
                         redOn = false;
                         buffer.CurrentStyle.StrikeThrough = true;
-                        break;
-                    case "7":
-                        buffer.CurrentStyle.ReverseVideo = true;
                         break;
                     case ">2":
                         buffer.CurrentStyle.Foreground = buffer.CurrentStyle.Background;

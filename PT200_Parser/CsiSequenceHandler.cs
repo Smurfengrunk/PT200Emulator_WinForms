@@ -120,6 +120,11 @@ namespace PT200_Parser
                 {
                     // PT200 Erase line command: 0 -> Cursor to EOL, 1 -> BOL to Cursor, 2 -> Entire line
                     // Current implententation supports only 0
+                    b.Delete(ParseOrDefault(p.ElementAtOrDefault(0), 0));
+                },
+                ["X"] = (p, t, b) =>
+                {
+                    // PT200 Erase character: ESC[nX, n -> number of characters
                     b.ClearLine(ParseOrDefault(p.ElementAtOrDefault(0), 0));
                 }
             };
