@@ -121,7 +121,10 @@ namespace PT200Emulator_WinForms.Controls
             { Keys.PageDown, 0xE051 },
 
             // Escape
-            { Keys.Escape, 0x01 }
+            { Keys.Escape, 0x01 },
+
+            //Pause/Break
+            {Keys.Pause, 0xE11D }
         };
 
         public TerminalCtrl(Transport transport, UiConfig uiConfig)
@@ -257,6 +260,7 @@ namespace PT200Emulator_WinForms.Controls
                 case Keys.Delete:
                 case Keys.Tab:
                 case Keys.Back:
+                case Keys.Pause:
                     return true;
             }
             return base.IsInputKey(keyData);
@@ -291,34 +295,54 @@ namespace PT200Emulator_WinForms.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            // 1) Ignorera rena modifierare
+            if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu)
+                return;
+
+            // 2) Sätt mods
+            var mods = KeyModifiers.None;
+            if (e.Shift) mods |= KeyModifiers.Shift;
+            if (e.Control) mods |= KeyModifiers.Ctrl;
+            if (e.Alt) mods |= KeyModifiers.Alt;
+            //this.LogDebug($"KeyDown: {((mods != KeyModifiers.None) ? mods : null)} {e.KeyCode}");
+
+            // 3) Hantera Ctrl+A–Z innan vi kortsluter på printable keys
+            if ((mods & KeyModifiers.Ctrl) != 0 && e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z)
+            {
+                // Maskning ska ske på int; byt till byte först efter maskningen
+                byte ctrlChar = (byte)((int)e.KeyCode & 0x1F);
+                _transport.Send(new byte[] { ctrlChar });
+                e.SuppressKeyPress = true; // hindra OnKeyPress från att skicka vanlig bokstav
+                return;
+            }
+
+            // 4) Nu får printable keys kortslutas (vi tar dem i OnKeyPress)
             if (IsPrintableKey(e.KeyCode)) return;
 
-            // Översätt WinForms KeyEventArgs till din egen KeyEvent
+            // 5) Din befintliga scancode-/specialhantering
             if (KeyToScanCode.TryGetValue(e.KeyCode, out int scanCode))
             {
-                var mods = KeyModifiers.None;
-                if (e.Shift) mods |= KeyModifiers.Shift;
-                if (e.Control) mods |= KeyModifiers.Ctrl;
-                if (e.Alt) mods |= KeyModifiers.Alt;
-
                 var keyEvent = new KeyEvent(scanCode, mods);
                 var bytes = InputMapper.MapKey(keyEvent);
 
                 if (bytes != null)
                 {
-                    if (e.KeyCode == Keys.Back)
+                    if (e.KeyCode == Keys.Back && mods == KeyModifiers.None)
                     {
                         e.SuppressKeyPress = true;
                         if (IsCursorBeyondInputStart())
                         {
-                            this.LogDebug("Sending backspace");
+                            //this.LogDebug("Sending backspace");
                             _buffer.Backspace();
                             _transport.Send(new byte[] { 0x08 });
                         }
-                        else this.LogDebug("Backspace detected but cursor position not beyond starting position");
+                        //else this.LogDebug("Backspace detected but cursor position not beyond starting position");
                     }
-                    else _transport.Send(bytes);
-                    this.LogDebug($"OnKeyDown sent {Encoding.ASCII.GetString(bytes)}");
+                    else
+                    {
+                        _transport.Send(bytes);
+                    }
+                    //this.LogDebug($"OnKeyDown sent {Encoding.ASCII.GetString(bytes)}");
                 }
                 else if (e.KeyCode == Keys.Enter)
                 {
@@ -328,7 +352,9 @@ namespace PT200Emulator_WinForms.Controls
                 }
                 else if (e.KeyCode == Keys.Tab) _transport.Send(new byte[] { 0x09 });
                 else if (e.KeyCode == Keys.Delete) _transport.Send(new byte[] { 0x7F });
-                this.LogDebug($"Key pressed is {((mods != KeyModifiers.None) ? mods : null)} {e.KeyCode}");
+                else if (e.KeyCode == Keys.Pause)
+                    _transport.Send(new byte[] { 0x16 });
+
                 base.OnKeyDown(e);
             }
         }
@@ -394,12 +420,12 @@ namespace PT200Emulator_WinForms.Controls
         {
             return c switch
             {
-                'Å' => (byte)'[',  // 0x5B
+                'Å' => (byte)']',  // 0x5B
                 'Ö' => (byte)'\\', // 0x5C
-                'Ä' => (byte)']',  // 0x5D
-                'å' => (byte)'{',  // 0x7B
+                'Ä' => (byte)'[',  // 0x5D
+                'å' => (byte)'}',  // 0x7B
                 'ö' => (byte)'|',  // 0x7C
-                'ä' => (byte)'}',  // 0x7D
+                'ä' => (byte)'{',  // 0x7D
                 _ => (byte)c
             };
         }
