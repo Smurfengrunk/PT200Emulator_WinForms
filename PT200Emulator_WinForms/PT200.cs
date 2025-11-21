@@ -1,46 +1,62 @@
 ﻿using PT200_InputHandler;
+
 using PT200_Logging;
+
 using PT200_Parser;
+
 using PT200_Rendering;
-using PT200Emulator_WinForms.Controls;
-using PT200Emulator_WinForms.Engine;
+
+using PT200EmulatorWinforms.Controls;
+using PT200EmulatorWinforms.Engine;
+
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using static PT200_Rendering.IRenderTarget;
-using static System.Windows.Forms.AxHost;
 
-namespace PT200Emulator_WinForms
+using System.Globalization;
+using System.Windows.Forms.Design;
+
+namespace PT200EmulatorWinforms
 {
+    /// <summary>
+    /// Main Form for the PT200 Emulator
+    /// </summary>
     public partial class PT200 : Form
     {
         private System.Windows.Forms.Timer _clockTimer = new();
         private StatusLineController statusController;
-        private Transport _transport;
-        private TerminalParser _parser => _transport.GetParser();
+        private Transport transport;
+        private TerminalParser parser => transport.GetParser();
         private TerminalCtrl terminalCtrl;
-        private CancellationTokenSource _cts = new();
+        private CancellationTokenSource cts = new();
         private static TerminalState terminalState;
-        private readonly LoggingLevelSwitch _levelSwitch;
-        private IInputMapper _inputMapper;
-        private PT200_InputHandler.PT200_InputHandler _inputHandler;
+        private readonly LoggingLevelSwitch LevelSwitch;
+        private IInputMapper inputMapper;
+        private PT200_InputHandler.PT200_InputHandler inputHandler;
         private Panel terminalHost = new Panel();
-        private ConfigService _configService;
-        private TransportConfig _transportConfig;
-        private UiConfig _uiConfig;
-        private BindingSource _uiConfigBinding;
-        private bool _initializing = false;
-        private VisualAttributeManager _visualAttributeManager;
+        public ConfigService configService { get; }
+        private TransportConfig transportConfig;
+        private UiConfig uiConfig;
+        private BindingSource uiConfigBinding;
+        private bool initializing;
+        private VisualAttributeManager visualAttributeManager;
+        /// <summary>
+        /// Main form constructor. Initializing form members and initializing Transport and Parser.
+        /// The Parameter levelSwitch is initialized in Program.cs, and sets the default logging level
+        /// </summary>
+        /// <param name="levelSwitch"></param>
         public PT200(LoggingLevelSwitch levelSwitch)
         {
             InitializeComponent();
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
             layoutPanel.PerformLayout();
             this.PerformLayout();
-            _levelSwitch = levelSwitch;
+            LevelSwitch = levelSwitch;
+            configService = new ConfigService(Path.Combine(Application.UserAppDataPath, "config"));
+            transportConfig = configService.LoadTransportConfig();
+            HostTextBox.Text = transportConfig.Host;
+            PortTextBox.Text = transportConfig.Port.ToString(CultureInfo.InvariantCulture);
+            uiConfig = configService.LoadUiConfig();
+            uiConfigBinding = new BindingSource { DataSource = uiConfig };
 
             rbGreen.ForeColor = Color.LimeGreen;
             rbGreen.Click += (s, e) => terminalCtrl.Focus();
@@ -58,30 +74,28 @@ namespace PT200Emulator_WinForms
             DisconnectButton.Click += (s, e) => terminalCtrl.Focus();
             DiagButton.Click += (s, e) => terminalCtrl.Focus();
             FullRedrawButton.Click += (s, e) => terminalCtrl.Focus();
-            clockLabel.BackColor = Color.Transparent;
-            numLockLabel.BackColor = Color.Transparent;
-            capsLockLabel.BackColor = Color.Transparent;
-            scrollLockLabel.BackColor = Color.Transparent;
-            insertLabel.BackColor = Color.Transparent;
-            messageLabel.BackColor = Color.Transparent;
-            onlineLabel.BackColor = Color.Transparent;
-            dsrLabel.BackColor = Color.Transparent;
-            systemLabel.BackColor = Color.Transparent;
-            g0g1Label.BackColor = Color.Transparent;
-            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
-            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
-            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
-            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
-            //Log.Logger = CreateLogger();
-            statusController = new StatusLineController(messageLabel, logLabel, onlineLabel, systemLabel, dsrLabel, g0g1Label, statusLine);
+            clockLabel.BackColor = StatusLine.BackColor;
+            numLockLabel.BackColor = StatusLine.BackColor;
+            capsLockLabel.BackColor = StatusLine.BackColor;
+            scrollLockLabel.BackColor = StatusLine.BackColor;
+            insertLabel.BackColor = StatusLine.BackColor;
+            messageLabel.BackColor = StatusLine.BackColor;
+            onlineLabel.BackColor = StatusLine.BackColor;
+            dsrLabel.BackColor = StatusLine.BackColor;
+            systemLabel.BackColor = StatusLine.BackColor;
+            g0g1Label.BackColor = StatusLine.BackColor;
+            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? StatusLine.ForeColor : StatusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : StatusLine.BackColor;
+            statusController = new StatusLineController(messageLabel, logLabel, onlineLabel, systemLabel, dsrLabel, g0g1Label, StatusLine);
             statusController.SetOnline(false);
             statusController.SetSystemReady(false, false);
             statusController.SetDsr(false);
             statusController.SetCharset(false);
-            Program.logForm.Show();
-            statusLine.Paint += (s, e) =>
+            StatusLine.Paint += (s, e) =>
             {
-                foreach (ToolStripItem item in statusLine.Items)
+                foreach (ToolStripItem item in StatusLine.Items)
                 {
                     if (item is ToolStripStatusLabel lbl && lbl != messageLabel)
                     {
@@ -91,27 +105,23 @@ namespace PT200Emulator_WinForms
                 }
             };
 
+            this.LogInformation("PT200 Emulator");
             InitStatusTimers();
-            _configService = new ConfigService(Path.Combine(Application.UserAppDataPath, "config"));
-            _transportConfig = _configService.LoadTransportConfig();
-            HostTextBox.Text = _transportConfig.Host;
-            PortTextBox.Text = _transportConfig.Port.ToString();
-            _uiConfig = _configService.LoadUiConfig();
-            _uiConfigBinding = new BindingSource { DataSource = _uiConfig };
-
-            _transport = new Transport(statusController, terminalCtrl);
-            terminalState = _parser.termState;
-            terminalState._screenFormat = _uiConfig.ScreenFormat;
-            terminalState.SetScreenFormat();
-            _visualAttributeManager = _parser.visualAttributeManager;
-            _visualAttributeManager.DisplayTypeChanged += () => terminalState.Display = _uiConfig.DisplayTheme;
+            LogFileCleanup();
 
             terminalHost.Name = "terminalHost";
             terminalHost.Dock = DockStyle.Fill;
             layoutPanel.Controls.Add(terminalHost, 1, 0);
 
-            terminalCtrl = new TerminalCtrl(_transport, _uiConfig);
-            terminalCtrl.SuspendLayout();
+            transport = new Transport(statusController);
+            terminalState = parser.termState;
+            terminalState._screenFormat = uiConfig.ScreenFormat;
+            terminalState.SetScreenFormat();
+            visualAttributeManager = parser.visualAttributeManager;
+            visualAttributeManager.DisplayTypeChanged += () => terminalState.Display = uiConfig.DisplayTheme;
+
+            terminalCtrl = new TerminalCtrl(transport, uiConfig);
+            statusController.TerminalCtrl = terminalCtrl;
             terminalCtrl.Margin = new Padding(3, 3, 0, 0);
             this.LogDebug(Engine.LocalizationProvider.Current.Get("log.terminal.init"));
             terminalCtrl.Dock = DockStyle.Fill;
@@ -119,13 +129,13 @@ namespace PT200Emulator_WinForms
 
             SidePanel.Dock = DockStyle.Fill;
             terminalCtrl.Dock = DockStyle.Fill;
-            statusLine.BackColor = terminalCtrl.ForeColor;
-            statusLine.Renderer = new ToolStripProfessionalRenderer(new ProfessionalColorTable
+            StatusLine.BackColor = terminalCtrl.ForeColor;
+            StatusLine.Renderer = new ToolStripProfessionalRenderer(new ProfessionalColorTable
             {
                 // neutralisera kantfärger
                 UseSystemColors = false
             });
-            statusLine.Dock = DockStyle.Fill;
+            StatusLine.Dock = DockStyle.Fill;
             layoutPanel.PerformLayout();
             this.PerformLayout();
             ResizeWindowToFit(terminalState.Columns, terminalState.Rows);
@@ -133,25 +143,27 @@ namespace PT200Emulator_WinForms
             this.KeyPreview = true;
             this.KeyUp += MainForm_KeyUp;
 
-            var formats = Enum.GetValues(typeof(TerminalState.ScreenFormat))
+            var formats = Enum.GetValues<TerminalState.ScreenFormat>()
                               .Cast<TerminalState.ScreenFormat>()
                               .Select(f => new { Format = f, Name = EnumHelper.GetDescription(f) })
                               .ToList();
 
             ScreenFormatCombo.DisplayMember = "Name";
             ScreenFormatCombo.ValueMember = "Format";
-            ScreenFormatCombo.DataSource = Enum.GetValues(typeof(TerminalState.ScreenFormat));
-            ScreenFormatCombo.DataBindings.Add("SelectedItem", _uiConfigBinding, nameof(UiConfig.ScreenFormat), true, DataSourceUpdateMode.OnPropertyChanged);
-            _initializing = true;
-            LogLevelCombo.DataSource = Enum.GetValues(typeof(LogEventLevel))
+            ScreenFormatCombo.DataSource = formats;
+            ScreenFormatCombo.DataBindings.Add("SelectedValue", uiConfigBinding, nameof(UiConfig.ScreenFormat), true, DataSourceUpdateMode.OnPropertyChanged);
+            initializing = true;
+            LogLevelCombo.DataSource = Enum.GetValues<TerminalState.ScreenFormat>()
                                            .Cast<LogEventLevel>()
                                            .ToList();
-            LogLevelCombo.SelectedItem = _uiConfig.DefaultLogLevel;
-            _initializing = false;
-            LogLevelCombo.DataBindings.Add("SelectedItem", _uiConfigBinding,
+            LogLevelCombo.SelectedItem = uiConfig.DefaultLogLevel;
+            initializing = false;
+            LogLevelCombo.DataBindings.Add("SelectedItem", uiConfigBinding,
                                            nameof(UiConfig.DefaultLogLevel),
                                            true, DataSourceUpdateMode.OnPropertyChanged);
-            switch (_uiConfig.DisplayTheme)
+            statusController.SetLogLevel(LogLevelCombo.SelectedItem.ToString());
+
+            switch (uiConfig.DisplayTheme)
             {
                 case TerminalState.DisplayType.White: rbWhite.Checked = true; break;
                 case TerminalState.DisplayType.Blue: rbBlue.Checked = true; break;
@@ -160,56 +172,100 @@ namespace PT200Emulator_WinForms
                 case TerminalState.DisplayType.FullColor: rbColor.Checked = true; break;
                 default: break;
             }
-            _initializing = true;
-            cursorStyleCombo.DataSource = Enum.GetValues(typeof(CursorStyle));
-            cursorStyleCombo.SelectedItem = _uiConfig.CursorStylePreference;
-            _initializing = false;
-            cursorStyleCombo.DataBindings.Add("SelectedItem", _uiConfigBinding,
+            initializing = true;
+            cursorStyleCombo.DataSource = Enum.GetValues<IRenderTarget.CursorStyle>();
+            cursorStyleCombo.SelectedItem = uiConfig.CursorStylePreference;
+            initializing = false;
+            cursorStyleCombo.DataBindings.Add("SelectedItem", uiConfigBinding,
                                               nameof(UiConfig.CursorStylePreference),
                                               true, DataSourceUpdateMode.OnPropertyChanged);
-            terminalCtrl.SetCursorStyle(_uiConfig.CursorStylePreference, _uiConfig.CursorBlink);
-            BlinkBox.Checked = _uiConfig.CursorBlink;
-            _levelSwitch = levelSwitch;
-            _inputHandler = new();
-            _inputMapper = _inputHandler.inputMapper;
-            terminalCtrl.InputMapper = _inputMapper;
+            terminalCtrl.SetCursorStyle(uiConfig.CursorStylePreference, uiConfig.CursorBlink);
+            BlinkBox.Checked = uiConfig.CursorBlink;
+            LevelSwitch = levelSwitch;
+            inputHandler = new();
+            inputMapper = inputHandler.inputMapper;
+            terminalCtrl.InputMapper = inputMapper;
             FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
             InitLocalizedUI();
-            terminalCtrl.ResumeLayout(true);
+            if (!uiConfig.DebugControls)
+            {
+                Program.logForm.Close();
+                ReconnectButton.Hide();
+                FullRedrawButton.Hide();
+                DiagButton.Hide();
+            }
+            else
+            {
+                Program.logForm.Show();
+                ReconnectButton.Show();
+                FullRedrawButton.Show();
+                DiagButton.Show();
+            }
             terminalCtrl.Focus();
         }
 
+        /// <summary>
+        /// Code to change the screen color to classic green
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbGreen_CheckedChanged(object sender, EventArgs e)
         {
             RePaint(StyleInfo.Color.Green, DimColor(Color.LimeGreen), StyleInfo.Color.DarkGreen);
-            _uiConfig.DisplayTheme = TerminalState.DisplayType.Green;
+            uiConfig.DisplayTheme = TerminalState.DisplayType.Green;
         }
 
+        /// <summary>
+        /// Code to change the screen color to classic amber
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbAmber_CheckedChanged(object sender, EventArgs e)
         {
             RePaint(StyleInfo.Color.Yellow, DimColor(Color.Orange), StyleInfo.Color.DarkYellow);
-            _uiConfig.DisplayTheme = TerminalState.DisplayType.Amber;
+            uiConfig.DisplayTheme = TerminalState.DisplayType.Amber;
         }
 
+        /// <summary>
+        /// Code to change the screen color to classic white (well, almost...)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbWhite_CheckedChanged(object sender, EventArgs e)
         {
             RePaint(StyleInfo.Color.White, DimColor(Color.White), StyleInfo.Color.Black);
-            _uiConfig.DisplayTheme = TerminalState.DisplayType.White;
+            uiConfig.DisplayTheme = TerminalState.DisplayType.White;
         }
 
+        /// <summary>
+        /// Code to change the screen color to HP-style "white"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbBlue_CheckedChanged(object sender, EventArgs e)
         {
             RePaint(StyleInfo.Color.Blue, DimColor(Color.FromArgb(180, 200, 230)), StyleInfo.Color.Black);
-            _uiConfig.DisplayTheme = TerminalState.DisplayType.Blue;
+            uiConfig.DisplayTheme = TerminalState.DisplayType.Blue;
         }
 
+        /// <summary>
+        /// Code to change the screen color to full color (partially implemented)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbColor_CheckedChanged(object sender, EventArgs e)
         {
             RePaint(StyleInfo.Color.Default, DimColor(Color.Wheat), StyleInfo.Color.Black);
-            _uiConfig.DisplayTheme = TerminalState.DisplayType.FullColor;
+            uiConfig.DisplayTheme = TerminalState.DisplayType.FullColor;
         }
 
-        public Color DimColor(Color color, double Factor = 0.75)
+        /// <summary>
+        /// Returns a Color object with the supplied color reduced to supplied factor
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="Factor"></param>
+        /// <returns></returns>
+        public static Color DimColor(Color color, double Factor = 0.65)
         {
             return Color.FromArgb(
                 color.A,
@@ -218,6 +274,11 @@ namespace PT200Emulator_WinForms
                 (int)(color.B * Factor));
         }
 
+        /// <summary>
+        /// Combobox to change Screen format to one of the formats specified in the ScreenFormat enum in TerminalState
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScreenFormatCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ScreenFormatCombo.SelectedValue is TerminalState.ScreenFormat format)
@@ -230,127 +291,151 @@ namespace PT200Emulator_WinForms
                 layoutPanel.PerformLayout();
                 this.PerformLayout();
                 ResizeWindowToFit(terminalState.Columns, terminalState.Rows); // beräknar storlek baserat på layout
-                _uiConfig.ScreenFormat = format;
+                uiConfig.ScreenFormat = format;
                 statusController.SetSystemReady((onlineLabel.Text == "ONLINE") ? true : false, (terminalState.Columns >= 132) ? true : false);
             }
         }
 
+        /// <summary>
+        /// Combobox to change the logging level to one of the levels in the LovEventLevel enum
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LogLevelCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_initializing) return;
+            if (initializing) return;
             switch (LogLevelCombo.SelectedItem.ToString())
             {
                 case "Verbose":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
                     break;
                 case "Debug":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Debug;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Debug;
                     break;
                 case "Information":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Information;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Information;
                     break;
                 case "Warning":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Warning;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Warning;
                     break;
                 case "Error":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Error;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Error;
                     break;
                 case "Fatal":
-                    _levelSwitch.MinimumLevel = LogEventLevel.Fatal;
+                    LevelSwitch.MinimumLevel = LogEventLevel.Fatal;
                     break;
             }
 
             statusController.SetLogLevel(LogLevelCombo.SelectedItem.ToString());
-            _uiConfig.DefaultLogLevel = _levelSwitch.MinimumLevel;
+            uiConfig.DefaultLogLevel = LevelSwitch.MinimumLevel;
         }
 
 
+        /// <summary>
+        /// RePaint needs to be called for changing color on text and status line when changing screen color
+        /// </summary>
+        /// <param name="TextColor"></param>
+        /// <param name="StatusBarColor"></param>
+        /// <param name="BackColor"></param>
         private void RePaint(StyleInfo.Color TextColor, Color StatusBarColor, StyleInfo.Color BackColor)
         {
-            statusLine.BackColor = StatusBarColor;  // statusraden kan fortfarande följa textfärgen
-            statusLine.ForeColor = RenderCore.TranslateColor(BackColor);       // och textfärgen inverterad
-            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
-            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
-            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
-            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
+            StatusLine.BackColor = StatusBarColor;  // statusraden kan fortfarande följa textfärgen
+            StatusLine.ForeColor = RenderCore.TranslateColor(BackColor);       // och textfärgen inverterad
+            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? StatusLine.ForeColor : StatusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : StatusLine.BackColor;
 
             terminalCtrl.RePaint(RenderCore.TranslateColor(TextColor), RenderCore.TranslateColor(BackColor));
         }
 
+        /// <summary>
+        /// Updates the message in the message field in the statusline (not used at the moment)
+        /// </summary>
+        /// <param name="text"></param>
         public void UpdateStatus(string text)
         {
             messageLabel.Text = text;
         }
 
+        /// <summary>
+        /// Starts and changes the clock field every second
+        /// </summary>
         private void InitStatusTimers()
         {
             //_clockTimer = new System.Windows.Forms.Timer();
             _clockTimer.Interval = 1000; // 1 second 
             _clockTimer.Tick += (s, e) =>
             {
-                clockLabel.Text = DateTime.Now.ToString("HH:mm");
+                clockLabel.Text = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
             };
             _clockTimer.Start();
         }
 
+        /// <summary>
+        /// Modifies the respective fields in the status line to reflect the status of numlock, capslock, scrollock and insert keys
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
-            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? statusLine.ForeColor : statusLine.BackColor;
-            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? statusLine.ForeColor : statusLine.BackColor;
-            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? statusLine.ForeColor : statusLine.BackColor;
-            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : statusLine.BackColor;
+            numLockLabel.ForeColor = Control.IsKeyLocked(Keys.NumLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            capsLockLabel.ForeColor = Control.IsKeyLocked(Keys.CapsLock) ? StatusLine.ForeColor : StatusLine.BackColor;
+            scrollLockLabel.ForeColor = Control.IsKeyLocked(Keys.Scroll) ? StatusLine.ForeColor : StatusLine.BackColor;
+            insertLabel.ForeColor = Control.IsKeyLocked(Keys.Insert) ? Color.Red : StatusLine.BackColor;
         }
 
-        private void StatusLine_Paint(object sender, PaintEventArgs e)
-        {
-            foreach (ToolStripItem item in statusLine.Items)
-            {
-                if (item is ToolStripStatusLabel lbl && lbl != messageLabel)
-                {
-                    var r = lbl.Bounds;
-                    // Rita en svart linje till vänster om fältet
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                    e.Graphics.DrawLine(Pens.Red, r.Left, r.Top, r.Left, r.Bottom - 1);
-                }
-            }
-        }
-
+        /// <summary>
+        /// Code run when the main form is loaded: Call the base OnLoad method, connect to host and update the statusbar
+        /// </summary>
+        /// <param name="e"></param>
         protected override async void OnLoad(EventArgs e)
         {
             this.LogDebug(Engine.LocalizationProvider.Current.Get("log.app.form.loaded"));
             base.OnLoad(e);
-            await _transport.Connect(_cts.Token, _transportConfig.Host, _transportConfig.Port);
+            await transport.Connect(cts.Token, transportConfig.Host, transportConfig.Port);
             statusController.SetSystemReady(true, (terminalState.Columns >= 132) ? true : false);
             terminalCtrl.Focus();
         }
 
+        /// <summary>
+        /// Temporary during development
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DiagButton_Click(object sender, EventArgs e)
         {
             terminalCtrl.ShowDiagnosticOverlay = !terminalCtrl.ShowDiagnosticOverlay;
             terminalCtrl.ForceRepaint();
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        /// <summary>
+        /// Save config data, cancel connection, flush log and then call the base OnFormClosing to clean upp when closing the application
+        /// </summary>
+        /// <param name="e"></param>
+        protected async override void OnFormClosing(FormClosingEventArgs e)
         {
             this.LogDebug(Engine.LocalizationProvider.Current.Get("log.app.closing"));
-            _configService.SaveTransportConfig(_transportConfig);
-            _configService.SaveUiConfig(_uiConfig);
-            _cts.Cancel();
+            configService.SaveTransportConfig(transportConfig);
+            configService.SaveUiConfig(uiConfig);
+            cts.Cancel();
             Log.CloseAndFlush();
+            await transport.Disconnect();
             base.OnFormClosing(e);
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
-        {
-        }
-
+        /// <summary>
+        /// Reizes main window to fit the actual screen format of the terminal
+        /// </summary>
+        /// <param name="cols"></param>
+        /// <param name="rows"></param>
         public void ResizeWindowToFit(int cols, int rows)
         {
-            int termWidth = cols * terminalCtrl._charWidth;
-            int termHeight = rows * terminalCtrl._charHeight;
+            int termWidth = cols * terminalCtrl.charWidth;
+            int termHeight = rows * terminalCtrl.charHeight;
 
             int sideWidth = SidePanel.GetPreferredSize(Size.Empty).Width;
-            int statusHeight = statusLine.GetPreferredSize(Size.Empty).Height;
+            int statusHeight = StatusLine.GetPreferredSize(Size.Empty).Height;
 
             int totalWidth = sideWidth + termWidth + layoutPanel.Padding.Horizontal + terminalHost.Margin.Horizontal;
             int totalHeight = termHeight + statusHeight + layoutPanel.Padding.Vertical + terminalHost.Margin.Vertical;
@@ -360,60 +445,104 @@ namespace PT200Emulator_WinForms
 
         }
 
+        /// <summary>
+        /// Button to connect to host (partially implenmented)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.connect", DateTime.Now));
-            _ = _transport.Connect(_cts.Token);
+            _ = transport.Connect(cts.Token);
 
         }
 
+        /// <summary>
+        /// Button to disconnect from host
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.disconnect", DateTime.Now));
-            _ = _transport.Disconnect();
+            _ = transport.Disconnect();
         }
 
+        /// <summary>
+        /// Button to toggle full or partial redraw, will probably be hidden as full redraw is necessary with the current way of handling rendering
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FullRedrawButton_Click(object sender, EventArgs e)
         {
             terminalCtrl.AlwaysFullRedraw = !terminalCtrl.AlwaysFullRedraw;
             FullRedrawButton.ForeColor = terminalCtrl.AlwaysFullRedraw ? Color.Red : Color.Black;
         }
 
+        /// <summary>
+        /// Reconnect button (partially implemented but not working properly), will most likely be hidden
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ReconnectButton_Click(object sender, EventArgs e)
         {
             this.LogDebug(Engine.LocalizationProvider.Current.Get("ui.button.reconnect", DateTime.Now));
-            _ = _transport.Reconnect(_cts.Token);
+            _ = transport.Reconnect(cts.Token);
 
         }
 
+        /// <summary>
+        /// Name or address of the host
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HostTextBox_TextChanged(object sender, EventArgs e)
         {
-            _transportConfig.Host = HostTextBox.Text;
+            transportConfig.Host = HostTextBox.Text;
         }
 
+        /// <summary>
+        /// Port number on host
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PortTextBox_TextChanged(Object sender, EventArgs e)
         {
-            if (int.TryParse(PortTextBox.Text, out int port)) _transportConfig.Port = port;
+            if (int.TryParse(PortTextBox.Text, out int port)) transportConfig.Port = port;
         }
 
+        /// <summary>
+        /// Combobox to change cursor format to one of the following: Block, horizontal bar (underscore) och vertical bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cursorStyleCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_initializing) return;
+            if (initializing) return;
             switch (cursorStyleCombo.SelectedItem.ToString())
             {
-                case "VerticalBar": _uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.VerticalBar; break;
-                case "HorizontalBar": _uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.HorizontalBar; break;
-                default: _uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.Block; break;
+                case "VerticalBar": uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.VerticalBar; break;
+                case "HorizontalBar": uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.HorizontalBar; break;
+                default: uiConfig.CursorStylePreference = IRenderTarget.CursorStyle.Block; break;
             }
-            terminalCtrl.SetCursorStyle(_uiConfig.CursorStylePreference, _uiConfig.CursorBlink);
+            terminalCtrl.SetCursorStyle(uiConfig.CursorStylePreference, uiConfig.CursorBlink);
         }
 
+        /// <summary>
+        /// Checkbox to toggle cursor blink on or off
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BlinkBox_CheckedChanged(object sender, EventArgs e)
         {
-            _uiConfig.CursorBlink = terminalState.CursorBlink = (BlinkBox.Checked) ? true : false;
-            terminalCtrl.SetCursorStyle(_uiConfig.CursorStylePreference, _uiConfig.CursorBlink);
+            uiConfig.CursorBlink = terminalState.CursorBlink = (BlinkBox.Checked) ? true : false;
+            terminalCtrl.SetCursorStyle(uiConfig.CursorStylePreference, uiConfig.CursorBlink);
+            terminalCtrl.Focus();
         }
 
+        /// <summary>
+        /// UI localization, changes name on screen controls
+        /// </summary>
         private void InitLocalizedUI()
         {
             rbAmber.Text = Engine.LocalizationProvider.Current.Get("ui.color.amber");
@@ -428,15 +557,49 @@ namespace PT200Emulator_WinForms
             FullRedrawButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.fullredraw");
             DiagButton.Text = Engine.LocalizationProvider.Current.Get("ui.button.diag");
         }
+
+        /// <summary>
+        /// Check if there are logfiles older than a certain date and deletes those
+        /// </summary>
+        public static void LogFileCleanup()
+        {
+            var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            var files = Directory.GetFiles(logDir, "PT200Emulator*.log");
+
+            foreach (var file in files)
+            {
+                var info = new FileInfo(file);
+                if (info.CreationTime < DateTime.Now.AddDays(-7))
+                {
+                    try { info.Delete(); }
+                    catch { /* Ignorera eller logga fel */ }
+                }
+            }
+        }
     }
 
+    /// <summary>
+    /// Class for handling the status bar
+    /// </summary>
     public class StatusLineController
     {
-        private StatusStrip statusLine;
+        private StatusStrip StatusLine;
         private ToolStripStatusLabel messageLabel, logLabel, onlineLabel, systemLabel, dsrLabel, g0g1Label;
+        public TerminalCtrl TerminalCtrl { get; set; }
+        public UiConfig UiConfig { get; set; }
 
+        /// <summary>
+        /// Constructor for the status line controller
+        /// </summary>
+        /// <param name="messagelabel"></param>
+        /// <param name="loglabel"></param>
+        /// <param name="online"></param>
+        /// <param name="system"></param>
+        /// <param name="dsr"></param>
+        /// <param name="g0g1"></param>
+        /// <param name="statusLine"></param>
         public StatusLineController(ToolStripStatusLabel messagelabel, ToolStripStatusLabel loglabel, ToolStripStatusLabel online, ToolStripStatusLabel system,
-                                    ToolStripStatusLabel dsr, ToolStripStatusLabel g0g1, StatusStrip _statusLine)
+                                    ToolStripStatusLabel dsr, ToolStripStatusLabel g0g1, StatusStrip statusLine)
         {
             messageLabel = messagelabel;
             logLabel = loglabel;
@@ -444,15 +607,25 @@ namespace PT200Emulator_WinForms
             systemLabel = system;
             dsrLabel = dsr;
             g0g1Label = g0g1;
-            statusLine = _statusLine;
+            StatusLine = statusLine;
         }
 
+        /// <summary>
+        /// Set content of the Online filed
+        /// </summary>
+        /// <param name="online"></param>
         public void SetOnline(bool online)
         {
             onlineLabel.Text = online ? "ONLINE" : "OFFLINE";
-            onlineLabel.ForeColor = online ? statusLine.ForeColor : Color.Red;
+            onlineLabel.ForeColor = online ? StatusLine.ForeColor : Color.Red;
+            RePaint();
         }
 
+        /// <summary>
+        /// Set content of the SystemReady field
+        /// </summary>
+        /// <param name="ready"></param>
+        /// <param name="lng"></param>
         public void SetSystemReady(bool ready, bool lng)
         {
             if (!ready) return;
@@ -466,28 +639,55 @@ namespace PT200Emulator_WinForms
                 systemLabel.Text = "RDY";
                 systemLabel.Width = 30;
             }
-                systemLabel.ForeColor = ready ? statusLine.ForeColor : statusLine.BackColor;
+            systemLabel.ForeColor = ready ? StatusLine.ForeColor : StatusLine.BackColor;
+            RePaint();
         }
 
+        /// <summary>
+        /// Set content of the DSR field
+        /// </summary>
+        /// <param name="xoff"></param>
         public void SetDsr(bool xoff)
         {
             dsrLabel.Text = xoff ? "XOFF" : "DSR";
-            dsrLabel.ForeColor = xoff ? Color.Red : statusLine.ForeColor;
+            dsrLabel.ForeColor = xoff ? Color.Red : StatusLine.ForeColor;
+            RePaint();
         }
 
+        /// <summary>
+        /// Set content of the charset field
+        /// </summary>
+        /// <param name="g1Active"></param>
         public void SetCharset(bool g1Active)
         {
             g0g1Label.Text = g1Active ? "G1" : "G0";
+            RePaint();
         }
 
+        /// <summary>
+        /// Reflect current logging level on status line
+        /// </summary>
+        /// <param name="level"></param>
         public void SetLogLevel(string level)
         {
             logLabel.Text = level;
+            RePaint();
         }
 
+        /// <summary>
+        /// Set content of the message field
+        /// </summary>
+        /// <param name="message"></param>
         public void SetMessage(string message)
         {
             messageLabel.Text = message;
+            RePaint();
+        }
+
+        public void RePaint()
+        {
+            if (TerminalCtrl == null) return;
+            TerminalCtrl.ForceRepaint();
         }
     }
 }

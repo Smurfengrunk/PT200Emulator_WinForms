@@ -1,4 +1,4 @@
-﻿namespace PT200Emulator_WinForms
+﻿namespace PT200EmulatorWinforms
 {
     partial class LogForm
     {

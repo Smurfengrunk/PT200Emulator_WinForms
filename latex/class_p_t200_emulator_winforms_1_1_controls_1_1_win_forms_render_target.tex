@@ -1,0 +1,204 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target}{}\label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+
+
+Render target for Windows Form that is supplied to the renderer.  
+
+
+Inheritance diagram for PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a32302dec465bf70ee3770f3a37b29971}{Win\+Forms\+Render\+Target}} (\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}{Graphics}} g, Font font, int char\+Width, int char\+Height, Color fore, Color back, Screen\+Buffer buffer)
+\begin{DoxyCompactList}\small\item\em Constructor for the Win\+Form render target, sets the corresponding properties for the supplied parameters and flags if the font is null. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_abe1a8d2fc67f19449ed3ddeaca6b7d73}{Clear}} ()
+\begin{DoxyCompactList}\small\item\em Clears screen. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a73cc4c94bddab78380cc52ae32b938dd}{Draw\+Run}} (Render\+Run run)
+\begin{DoxyCompactList}\small\item\em The main method to communicate with the renderer. Measures the width and height of the actual cell, retrieves attributes from Zone\+Attributes. Sets flags for reverse video, low intensity, foreground and background color depending on the status of reverse video and low intensity. Paint the cell background, and then add the actual character. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_acff215110bc8e07b4383d1a748f03a0e}{Set\+Caret}} (int row, int col)
+\begin{DoxyCompactList}\small\item\em Moves the caret to supplied row and column. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a89ad07e05596a0331163f9e90598de0d}{Draw\+Caret}} (\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}{Graphics}} g, Color caret\+Color)
+\begin{DoxyCompactList}\small\item\em Draw caret att current position as either block, horizontal or vertical bar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_aeafbf30f6be9f3ff0f73b87bcbf6f54c}{Set\+Caret\+Style}} (Cursor\+Style style)
+\begin{DoxyCompactList}\small\item\em Sets caret style to that chosen. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Color \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_ad24dc1e1d50d0587c6d4bcd93beb2af9}{Dim\+Color}} (Color color, double Factor=0.\+5)
+\begin{DoxyCompactList}\small\item\em Low intensity color. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Screen\+Buffer \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a78443d624435388fa7156fa9feb89105}{\+\_\+buffer}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Graphics \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}{Graphics}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Render target for Windows Form that is supplied to the renderer. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a32302dec465bf70ee3770f3a37b29971}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!WinFormsRenderTarget@{WinFormsRenderTarget}}
+\index{WinFormsRenderTarget@{WinFormsRenderTarget}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{WinFormsRenderTarget()}{WinFormsRenderTarget()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a32302dec465bf70ee3770f3a37b29971} 
+PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Win\+Forms\+Render\+Target (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}{Graphics}}}]{g}{, }\item[{Font}]{font}{, }\item[{int}]{char\+Width}{, }\item[{int}]{char\+Height}{, }\item[{Color}]{fore}{, }\item[{Color}]{back}{, }\item[{Screen\+Buffer}]{buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the Win\+Form render target, sets the corresponding properties for the supplied parameters and flags if the font is null. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em g} & \\
+\hline
+{\em font} & \\
+\hline
+{\em char\+Width} & \\
+\hline
+{\em char\+Height} & \\
+\hline
+{\em fore} & \\
+\hline
+{\em back} & \\
+\hline
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_abe1a8d2fc67f19449ed3ddeaca6b7d73}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!Clear@{Clear}}
+\index{Clear@{Clear}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{Clear()}{Clear()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_abe1a8d2fc67f19449ed3ddeaca6b7d73} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Clear (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Clears screen. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_ad24dc1e1d50d0587c6d4bcd93beb2af9}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!DimColor@{DimColor}}
+\index{DimColor@{DimColor}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{DimColor()}{DimColor()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_ad24dc1e1d50d0587c6d4bcd93beb2af9} 
+Color PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Dim\+Color (\begin{DoxyParamCaption}\item[{Color}]{color}{, }\item[{double}]{Factor}{ = {\ttfamily 0\+:\+:5}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Low intensity color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+{\em Factor} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the supplied color multiplied with the supplied factor (default 0.\+5)
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a89ad07e05596a0331163f9e90598de0d}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!DrawCaret@{DrawCaret}}
+\index{DrawCaret@{DrawCaret}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{DrawCaret()}{DrawCaret()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a89ad07e05596a0331163f9e90598de0d} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Draw\+Caret (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}{Graphics}}}]{g}{, }\item[{Color}]{caret\+Color}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Draw caret att current position as either block, horizontal or vertical bar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em g} & \\
+\hline
+{\em caret\+Color} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a73cc4c94bddab78380cc52ae32b938dd}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!DrawRun@{DrawRun}}
+\index{DrawRun@{DrawRun}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{DrawRun()}{DrawRun()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a73cc4c94bddab78380cc52ae32b938dd} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Draw\+Run (\begin{DoxyParamCaption}\item[{Render\+Run}]{run}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The main method to communicate with the renderer. Measures the width and height of the actual cell, retrieves attributes from Zone\+Attributes. Sets flags for reverse video, low intensity, foreground and background color depending on the status of reverse video and low intensity. Paint the cell background, and then add the actual character. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em run} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_acff215110bc8e07b4383d1a748f03a0e}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!SetCaret@{SetCaret}}
+\index{SetCaret@{SetCaret}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{SetCaret()}{SetCaret()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_acff215110bc8e07b4383d1a748f03a0e} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Set\+Caret (\begin{DoxyParamCaption}\item[{int}]{row}{, }\item[{int}]{col}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Moves the caret to supplied row and column. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_aeafbf30f6be9f3ff0f73b87bcbf6f54c}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!SetCaretStyle@{SetCaretStyle}}
+\index{SetCaretStyle@{SetCaretStyle}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{SetCaretStyle()}{SetCaretStyle()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_aeafbf30f6be9f3ff0f73b87bcbf6f54c} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Set\+Caret\+Style (\begin{DoxyParamCaption}\item[{Cursor\+Style}]{style}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets caret style to that chosen. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em style} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-variable-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a78443d624435388fa7156fa9feb89105}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!\_buffer@{\_buffer}}
+\index{\_buffer@{\_buffer}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{\_buffer}{\_buffer}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a78443d624435388fa7156fa9feb89105} 
+Screen\+Buffer PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+\_\+buffer}
+
+
+
+\label{doc-property-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_doc-property-members}
+\doxysubsection{Property Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af}\index{PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}!Graphics@{Graphics}}
+\index{Graphics@{Graphics}!PT200EmulatorWinforms.Controls.WinFormsRenderTarget@{PT200EmulatorWinforms.Controls.WinFormsRenderTarget}}
+\doxysubsubsection{\texorpdfstring{Graphics}{Graphics}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target_a0aaefde7fd5d231a984211a95c1581af} 
+Graphics PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Render\+Target.\+Graphics\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\+Engine/\mbox{\hyperlink{_win_forms___render_target_8cs}{Win\+Forms\+\_\+\+Render\+Target.\+cs}}\end{DoxyCompactItemize}

@@ -1,0 +1,95 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Engine.\+Localization\+Provider Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider}{}\label{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider}\index{PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}}
+
+
+Class to handle localization.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a2efbaeac4cc976b7da39e1493984bcfc}{Localization\+Provider}} (string language\+Code="{}sv"{})
+\begin{DoxyCompactList}\small\item\em Constructor for the \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider}{Localization\+Provider} class, sets the Language property, loads the actual localization json for the given language and if that fails load the english messages. \end{DoxyCompactList}\item 
+string \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a46776224fc0b934f48eed1ed1e20e864}{Get}} (string key, params object\mbox{[}$\,$\mbox{]} args)
+\begin{DoxyCompactList}\small\item\em Retrieves the localized string for the given key with the given args if available. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+string \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a01452a28bba01cc97323711c38bdf0cc}{Language}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+static \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a2efbaeac4cc976b7da39e1493984bcfc}{Localization\+Provider}} \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a8e6d5934949dbf9dceadabdf126cdecf}{Current}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Static reference to simplify reference to localization strings. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class to handle localization. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a2efbaeac4cc976b7da39e1493984bcfc}\index{PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}!LocalizationProvider@{LocalizationProvider}}
+\index{LocalizationProvider@{LocalizationProvider}!PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}}
+\doxysubsubsection{\texorpdfstring{LocalizationProvider()}{LocalizationProvider()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a2efbaeac4cc976b7da39e1493984bcfc} 
+PT200\+Emulator\+Winforms.\+Engine.\+Localization\+Provider.\+Localization\+Provider (\begin{DoxyParamCaption}\item[{string}]{language\+Code}{ = {\ttfamily "{}sv"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider}{Localization\+Provider} class, sets the Language property, loads the actual localization json for the given language and if that fails load the english messages. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em language\+Code} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a46776224fc0b934f48eed1ed1e20e864}\index{PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}!Get@{Get}}
+\index{Get@{Get}!PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}}
+\doxysubsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a46776224fc0b934f48eed1ed1e20e864} 
+string PT200\+Emulator\+Winforms.\+Engine.\+Localization\+Provider.\+Get (\begin{DoxyParamCaption}\item[{string}]{key}{, }\item[{params object\mbox{[}$\,$\mbox{]}}]{args}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves the localized string for the given key with the given args if available. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+{\em args} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Formatted string for the actual language or english if it doesn\textquotesingle{}t exist or an error message if key isn\textquotesingle{}t found at all
+\end{DoxyReturn}
+
+
+\label{doc-property-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_doc-property-members}
+\doxysubsection{Property Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a8e6d5934949dbf9dceadabdf126cdecf}\index{PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}!Current@{Current}}
+\index{Current@{Current}!PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}}
+\doxysubsubsection{\texorpdfstring{Current}{Current}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a8e6d5934949dbf9dceadabdf126cdecf} 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a2efbaeac4cc976b7da39e1493984bcfc}{Localization\+Provider}} PT200\+Emulator\+Winforms.\+Engine.\+Localization\+Provider.\+Current\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [get]}}
+
+
+
+Static reference to simplify reference to localization strings. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a01452a28bba01cc97323711c38bdf0cc}\index{PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}!Language@{Language}}
+\index{Language@{Language}!PT200EmulatorWinforms.Engine.LocalizationProvider@{PT200EmulatorWinforms.Engine.LocalizationProvider}}
+\doxysubsubsection{\texorpdfstring{Language}{Language}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_localization_provider_a01452a28bba01cc97323711c38bdf0cc} 
+string PT200\+Emulator\+Winforms.\+Engine.\+Localization\+Provider.\+Language\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\+Engine/\mbox{\hyperlink{_localization_provider_8cs}{Localization\+Provider.\+cs}}\end{DoxyCompactItemize}

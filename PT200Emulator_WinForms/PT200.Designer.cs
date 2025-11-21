@@ -1,7 +1,7 @@
-﻿using PT200Emulator_WinForms.Engine;
+﻿using PT200EmulatorWinforms.Engine;
 using System.Windows.Forms;
 
-namespace PT200Emulator_WinForms
+namespace PT200EmulatorWinforms
 {
     partial class PT200
     {
@@ -49,7 +49,7 @@ namespace PT200Emulator_WinForms
             rbBlue = new RadioButton();
             rbAmber = new RadioButton();
             rbWhite = new RadioButton();
-            statusLine = new StatusStrip();
+            StatusLine = new StatusStrip();
             messageLabel = new ToolStripStatusLabel();
             logLabel = new ToolStripStatusLabel();
             onlineLabel = new ToolStripStatusLabel();
@@ -64,7 +64,7 @@ namespace PT200Emulator_WinForms
             layoutPanel = new TableLayoutPanel();
             SidePanel.SuspendLayout();
             rbPanel.SuspendLayout();
-            statusLine.SuspendLayout();
+            StatusLine.SuspendLayout();
             layoutPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -98,7 +98,7 @@ namespace PT200Emulator_WinForms
             // cursorStyleCombo
             // 
             cursorStyleCombo.FormattingEnabled = true;
-            cursorStyleCombo.Location = new Point(3, 308);
+            cursorStyleCombo.Location = new Point(3, 250);
             cursorStyleCombo.Name = "cursorStyleCombo";
             cursorStyleCombo.Size = new Size(104, 23);
             cursorStyleCombo.TabIndex = 16;
@@ -107,7 +107,7 @@ namespace PT200Emulator_WinForms
             // BlinkBox
             // 
             BlinkBox.AutoSize = true;
-            BlinkBox.Location = new Point(113, 312);
+            BlinkBox.Location = new Point(113, 254);
             BlinkBox.Name = "BlinkBox";
             BlinkBox.Size = new Size(52, 19);
             BlinkBox.TabIndex = 15;
@@ -118,43 +118,46 @@ namespace PT200Emulator_WinForms
             // ReconnectButton
             // 
             ReconnectButton.Anchor = AnchorStyles.Left;
-            ReconnectButton.Location = new Point(86, 233);
+            ReconnectButton.Location = new Point(3, 283);
             ReconnectButton.Name = "ReconnectButton";
             ReconnectButton.Size = new Size(75, 23);
             ReconnectButton.TabIndex = 14;
             ReconnectButton.TabStop = false;
             ReconnectButton.Text = "Reconnect";
             ReconnectButton.UseVisualStyleBackColor = true;
+            ReconnectButton.Visible = false;
             ReconnectButton.Click += ReconnectButton_Click;
             // 
             // FullRedrawButton
             // 
             FullRedrawButton.Anchor = AnchorStyles.Left;
-            FullRedrawButton.Location = new Point(92, 279);
+            FullRedrawButton.Location = new Point(95, 312);
             FullRedrawButton.Name = "FullRedrawButton";
             FullRedrawButton.Size = new Size(76, 23);
             FullRedrawButton.TabIndex = 13;
             FullRedrawButton.TabStop = false;
             FullRedrawButton.Text = "Fullredraw";
             FullRedrawButton.UseVisualStyleBackColor = true;
+            FullRedrawButton.Visible = false;
             FullRedrawButton.Click += FullRedrawButton_Click;
             // 
             // DiagButton
             // 
             DiagButton.Anchor = AnchorStyles.Left;
-            DiagButton.Location = new Point(3, 279);
+            DiagButton.Location = new Point(3, 312);
             DiagButton.Name = "DiagButton";
             DiagButton.Size = new Size(86, 23);
             DiagButton.TabIndex = 12;
             DiagButton.TabStop = false;
             DiagButton.Text = "Diag";
             DiagButton.UseVisualStyleBackColor = true;
+            DiagButton.Visible = false;
             DiagButton.Click += DiagButton_Click;
             // 
             // DisconnectButton
             // 
             DisconnectButton.Anchor = AnchorStyles.Left;
-            DisconnectButton.Location = new Point(3, 250);
+            DisconnectButton.Location = new Point(81, 221);
             DisconnectButton.Name = "DisconnectButton";
             DisconnectButton.Size = new Size(75, 23);
             DisconnectButton.TabIndex = 11;
@@ -291,21 +294,21 @@ namespace PT200Emulator_WinForms
             rbWhite.UseVisualStyleBackColor = true;
             rbWhite.CheckedChanged += rbWhite_CheckedChanged;
             // 
-            // statusLine
+            // StatusLine
             // 
-            statusLine.AutoSize = false;
-            statusLine.BackColor = Color.LimeGreen;
-            statusLine.Font = new Font("Consolas", 10F);
-            statusLine.Items.AddRange(new ToolStripItem[] { messageLabel, logLabel, onlineLabel, dsrLabel, systemLabel, g0g1Label, insertLabel, scrollLockLabel, capsLockLabel, numLockLabel, clockLabel });
-            statusLine.Location = new Point(180, 428);
-            statusLine.Name = "statusLine";
-            statusLine.Size = new Size(620, 22);
-            statusLine.TabIndex = 1;
+            StatusLine.AutoSize = false;
+            StatusLine.BackColor = Color.LimeGreen;
+            StatusLine.Font = new Font("Consolas", 10F);
+            StatusLine.Items.AddRange(new ToolStripItem[] { messageLabel, logLabel, onlineLabel, dsrLabel, systemLabel, g0g1Label, insertLabel, scrollLockLabel, capsLockLabel, numLockLabel, clockLabel });
+            StatusLine.Location = new Point(180, 428);
+            StatusLine.Name = "StatusLine";
+            StatusLine.Size = new Size(620, 22);
+            StatusLine.TabIndex = 1;
             // 
             // messageLabel
             // 
             messageLabel.Name = "messageLabel";
-            messageLabel.Size = new Size(130, 17);
+            messageLabel.Size = new Size(125, 17);
             messageLabel.Spring = true;
             messageLabel.Text = "Ready...";
             messageLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -387,7 +390,7 @@ namespace PT200Emulator_WinForms
             layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 180F));
             layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             layoutPanel.Controls.Add(SidePanel, 0, 0);
-            layoutPanel.Controls.Add(statusLine, 1, 1);
+            layoutPanel.Controls.Add(StatusLine, 1, 1);
             layoutPanel.Dock = DockStyle.Fill;
             layoutPanel.Location = new Point(0, 0);
             layoutPanel.Margin = new Padding(0);
@@ -410,8 +413,8 @@ namespace PT200Emulator_WinForms
             SidePanel.PerformLayout();
             rbPanel.ResumeLayout(false);
             rbPanel.PerformLayout();
-            statusLine.ResumeLayout(false);
-            statusLine.PerformLayout();
+            StatusLine.ResumeLayout(false);
+            StatusLine.PerformLayout();
             layoutPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -428,8 +431,7 @@ namespace PT200Emulator_WinForms
         private ComboBox ScreenFormatCombo;
         private TextBox PortTextBox;
         private TextBox HostTextBox;
-        //private ToolStripStatusLabel toolStripStatusLabel1;
-        private StatusStrip statusLine;
+        private StatusStrip StatusLine;
         private ToolStripStatusLabel messageLabel;
         private ToolStripStatusLabel onlineLabel;
         private ToolStripStatusLabel dsrLabel;

@@ -1,0 +1,195 @@
+\doxysection{PT200\+Emulator\+Winforms.\+PT200 Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_p_t200}{}\label{class_p_t200_emulator_winforms_1_1_p_t200}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+
+
+Main Form for the \doxylink{class_p_t200_emulator_winforms_1_1_p_t200}{PT200} Emulator.  
+
+
+Inheritance diagram for PT200\+Emulator\+Winforms.\+PT200\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_p_t200_emulator_winforms_1_1_p_t200}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a65551717de3da0f8990fb2cffaab68bf}{PT200}} (Logging\+Level\+Switch level\+Switch)
+\begin{DoxyCompactList}\small\item\em Main form constructor. Initializing form members and initializing \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}{Transport} and Parser. The Parameter level\+Switch is initialized in \doxylink{_program_8cs}{Program.\+cs}, and sets the default logging level. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a22e56f099be645b2697ae1b4802de087}{Update\+Status}} (string text)
+\begin{DoxyCompactList}\small\item\em Updates the message in the message field in the statusline (not used at the moment). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a892842c0e05b239faf384d4b22b1e71a}{Resize\+Window\+To\+Fit}} (int cols, int rows)
+\begin{DoxyCompactList}\small\item\em Reizes main window to fit the actual screen format of the terminal. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Color \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_afbdb0f64d8076e331f8969cb27b27e82}{Dim\+Color}} (Color color, double Factor=0.\+65)
+\begin{DoxyCompactList}\small\item\em Returns a Color object with the supplied color reduced to supplied factor. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_ac83e39cdf66f3d24f804e5ae4e28d9c9}{Log\+File\+Cleanup}} ()
+\begin{DoxyCompactList}\small\item\em Check if there are logfiles older than a certain date and deletes those. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override async void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a78a51594835a024c685a9efa4bfed588}{On\+Load}} (Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Code run when the main form is loaded\+: Call the base On\+Load method, connect to host and update the statusbar. \end{DoxyCompactList}\item 
+async override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a7be606b83ca7c7becb9bd56df7133fc3}{On\+Form\+Closing}} (Form\+Closing\+Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Save config data, cancel connection, flush log and then call the base On\+Form\+Closing to clean upp when closing the application. \end{DoxyCompactList}\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_a445da7cb8e808ab0d697258c55ae84a7}{Dispose}} (bool disposing)
+\begin{DoxyCompactList}\small\item\em Clean up any resources being used. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_config_service}{Config\+Service}} \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_p_t200_adc9a994bd82b3e0251d963cdf4e73f2e}{config\+Service}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main Form for the \doxylink{class_p_t200_emulator_winforms_1_1_p_t200}{PT200} Emulator. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a65551717de3da0f8990fb2cffaab68bf}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!PT200@{PT200}}
+\index{PT200@{PT200}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{PT200()}{PT200()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a65551717de3da0f8990fb2cffaab68bf} 
+PT200\+Emulator\+Winforms.\+PT200.\+PT200 (\begin{DoxyParamCaption}\item[{Logging\+Level\+Switch}]{level\+Switch}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Main form constructor. Initializing form members and initializing \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}{Transport} and Parser. The Parameter level\+Switch is initialized in \doxylink{_program_8cs}{Program.\+cs}, and sets the default logging level. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em level\+Switch} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_afbdb0f64d8076e331f8969cb27b27e82}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!DimColor@{DimColor}}
+\index{DimColor@{DimColor}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{DimColor()}{DimColor()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_afbdb0f64d8076e331f8969cb27b27e82} 
+Color PT200\+Emulator\+Winforms.\+PT200.\+Dim\+Color (\begin{DoxyParamCaption}\item[{Color}]{color}{, }\item[{double}]{Factor}{ = {\ttfamily 0\+:\+:65}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns a Color object with the supplied color reduced to supplied factor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+{\em Factor} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a445da7cb8e808ab0d697258c55ae84a7}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!Dispose@{Dispose}}
+\index{Dispose@{Dispose}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{Dispose()}{Dispose()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a445da7cb8e808ab0d697258c55ae84a7} 
+override void PT200\+Emulator\+Winforms.\+PT200.\+Dispose (\begin{DoxyParamCaption}\item[{bool}]{disposing}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Clean up any resources being used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em disposing} & true if managed resources should be disposed; otherwise, false.\\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_ac83e39cdf66f3d24f804e5ae4e28d9c9}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!LogFileCleanup@{LogFileCleanup}}
+\index{LogFileCleanup@{LogFileCleanup}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{LogFileCleanup()}{LogFileCleanup()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_ac83e39cdf66f3d24f804e5ae4e28d9c9} 
+void PT200\+Emulator\+Winforms.\+PT200.\+Log\+File\+Cleanup (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Check if there are logfiles older than a certain date and deletes those. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a7be606b83ca7c7becb9bd56df7133fc3}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!OnFormClosing@{OnFormClosing}}
+\index{OnFormClosing@{OnFormClosing}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{OnFormClosing()}{OnFormClosing()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a7be606b83ca7c7becb9bd56df7133fc3} 
+async override void PT200\+Emulator\+Winforms.\+PT200.\+On\+Form\+Closing (\begin{DoxyParamCaption}\item[{Form\+Closing\+Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Save config data, cancel connection, flush log and then call the base On\+Form\+Closing to clean upp when closing the application. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a78a51594835a024c685a9efa4bfed588}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!OnLoad@{OnLoad}}
+\index{OnLoad@{OnLoad}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{OnLoad()}{OnLoad()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a78a51594835a024c685a9efa4bfed588} 
+override async void PT200\+Emulator\+Winforms.\+PT200.\+On\+Load (\begin{DoxyParamCaption}\item[{Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Code run when the main form is loaded\+: Call the base On\+Load method, connect to host and update the statusbar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a892842c0e05b239faf384d4b22b1e71a}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!ResizeWindowToFit@{ResizeWindowToFit}}
+\index{ResizeWindowToFit@{ResizeWindowToFit}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{ResizeWindowToFit()}{ResizeWindowToFit()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a892842c0e05b239faf384d4b22b1e71a} 
+void PT200\+Emulator\+Winforms.\+PT200.\+Resize\+Window\+To\+Fit (\begin{DoxyParamCaption}\item[{int}]{cols}{, }\item[{int}]{rows}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reizes main window to fit the actual screen format of the terminal. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cols} & \\
+\hline
+{\em rows} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_a22e56f099be645b2697ae1b4802de087}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!UpdateStatus@{UpdateStatus}}
+\index{UpdateStatus@{UpdateStatus}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{UpdateStatus()}{UpdateStatus()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_a22e56f099be645b2697ae1b4802de087} 
+void PT200\+Emulator\+Winforms.\+PT200.\+Update\+Status (\begin{DoxyParamCaption}\item[{string}]{text}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Updates the message in the message field in the statusline (not used at the moment). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-property-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_doc-property-members}
+\doxysubsection{Property Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_p_t200_adc9a994bd82b3e0251d963cdf4e73f2e}\index{PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}!configService@{configService}}
+\index{configService@{configService}!PT200EmulatorWinforms.PT200@{PT200EmulatorWinforms.PT200}}
+\doxysubsubsection{\texorpdfstring{configService}{configService}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_p_t200_adc9a994bd82b3e0251d963cdf4e73f2e} 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_config_service}{Config\+Service}} PT200\+Emulator\+Winforms.\+PT200.\+config\+Service\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\mbox{\hyperlink{_p_t200_8cs}{PT200.\+cs}}\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\mbox{\hyperlink{_p_t200_8_designer_8cs}{PT200.\+Designer.\+cs}}\end{DoxyCompactItemize}

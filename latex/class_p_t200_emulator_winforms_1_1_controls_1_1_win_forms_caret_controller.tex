@@ -1,0 +1,169 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller}{}\label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+
+
+Caret controller.  
+
+
+Inheritance diagram for PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.577465cm]{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a99a983ce25cfe5f7fcb4e4211bfc0d2e}{Win\+Forms\+Caret\+Controller}} (Control control)
+\begin{DoxyCompactList}\small\item\em Base constructor that just sets the control property to the one supplied. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aaa248b9e6a6ceb51a2af5a34b184c57b}{Win\+Forms\+Caret\+Controller}} (Control control, \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target}{Win\+Forms\+Render\+Target}} render\+Target, IRender\+Target.\+Cursor\+Style style, Screen\+Buffer buffer, \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl}{Terminal\+Ctrl}} ctrl)
+\begin{DoxyCompactList}\small\item\em Main constructor. Sets the corresponding properties to the arguments supplied and starts the blink timer for the cursor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a944259b647ea303a4e2475d9e99223c1}{Set\+Caret\+Position}} (int row, int col)
+\begin{DoxyCompactList}\small\item\em Moves caret to the specified position, calls the render target equivalent and flags the control for repaint. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_ac42c1ab81b30d3da3c714eeacf63598f}{Set\+Cursor\+Style}} (IRender\+Target.\+Cursor\+Style style, bool blink)
+\begin{DoxyCompactList}\small\item\em Sets the cursor style to the one supplied and forwards that to the render target and if the cursor blink is turned off it stops the timer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aadae280c600f19da132cb958068578b1}{Move\+Caret}} (int d\+Row, int d\+Col)
+\begin{DoxyCompactList}\small\item\em Move the cursor supplied parameters rows and columns from the current position, mark the screen buffer as "{}dirty"{} and flag the control for repaint. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_adf295ed00cfab4ff8543923284035f89}{Show}} ()
+\begin{DoxyCompactList}\small\item\em Makes the cursor visible. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_abe97ba24dd33552a4e71de5df950be8a}{Hide}} ()
+\begin{DoxyCompactList}\small\item\em Makes the cursor invisible. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a86c9783ed2069431da0f05f813d45ab5}{Dispose}} ()
+\begin{DoxyCompactList}\small\item\em Clean up when closed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Caret controller. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a99a983ce25cfe5f7fcb4e4211bfc0d2e}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!WinFormsCaretController@{WinFormsCaretController}}
+\index{WinFormsCaretController@{WinFormsCaretController}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{WinFormsCaretController()}{WinFormsCaretController()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a99a983ce25cfe5f7fcb4e4211bfc0d2e} 
+PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Win\+Forms\+Caret\+Controller (\begin{DoxyParamCaption}\item[{Control}]{control}{}\end{DoxyParamCaption})}
+
+
+
+Base constructor that just sets the control property to the one supplied. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em control} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aaa248b9e6a6ceb51a2af5a34b184c57b}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!WinFormsCaretController@{WinFormsCaretController}}
+\index{WinFormsCaretController@{WinFormsCaretController}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{WinFormsCaretController()}{WinFormsCaretController()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aaa248b9e6a6ceb51a2af5a34b184c57b} 
+PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Win\+Forms\+Caret\+Controller (\begin{DoxyParamCaption}\item[{Control}]{control}{, }\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_render_target}{Win\+Forms\+Render\+Target}}}]{render\+Target}{, }\item[{IRender\+Target.\+Cursor\+Style}]{style}{, }\item[{Screen\+Buffer}]{buffer}{, }\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl}{Terminal\+Ctrl}}}]{ctrl}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Main constructor. Sets the corresponding properties to the arguments supplied and starts the blink timer for the cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em control} & \\
+\hline
+{\em render\+Target} & \\
+\hline
+{\em style} & \\
+\hline
+{\em buffer} & \\
+\hline
+{\em ctrl} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a86c9783ed2069431da0f05f813d45ab5}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!Dispose@{Dispose}}
+\index{Dispose@{Dispose}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{Dispose()}{Dispose()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a86c9783ed2069431da0f05f813d45ab5} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Dispose (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Clean up when closed. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_abe97ba24dd33552a4e71de5df950be8a}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!Hide@{Hide}}
+\index{Hide@{Hide}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{Hide()}{Hide()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_abe97ba24dd33552a4e71de5df950be8a} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Hide (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Makes the cursor invisible. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aadae280c600f19da132cb958068578b1}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!MoveCaret@{MoveCaret}}
+\index{MoveCaret@{MoveCaret}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{MoveCaret()}{MoveCaret()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_aadae280c600f19da132cb958068578b1} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Move\+Caret (\begin{DoxyParamCaption}\item[{int}]{d\+Row}{, }\item[{int}]{d\+Col}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Move the cursor supplied parameters rows and columns from the current position, mark the screen buffer as "{}dirty"{} and flag the control for repaint. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em d\+Row} & \\
+\hline
+{\em d\+Col} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a944259b647ea303a4e2475d9e99223c1}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!SetCaretPosition@{SetCaretPosition}}
+\index{SetCaretPosition@{SetCaretPosition}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{SetCaretPosition()}{SetCaretPosition()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_a944259b647ea303a4e2475d9e99223c1} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Set\+Caret\+Position (\begin{DoxyParamCaption}\item[{int}]{row}{, }\item[{int}]{col}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Moves caret to the specified position, calls the render target equivalent and flags the control for repaint. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_ac42c1ab81b30d3da3c714eeacf63598f}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!SetCursorStyle@{SetCursorStyle}}
+\index{SetCursorStyle@{SetCursorStyle}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{SetCursorStyle()}{SetCursorStyle()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_ac42c1ab81b30d3da3c714eeacf63598f} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Set\+Cursor\+Style (\begin{DoxyParamCaption}\item[{IRender\+Target.\+Cursor\+Style}]{style}{, }\item[{bool}]{blink}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the cursor style to the one supplied and forwards that to the render target and if the cursor blink is turned off it stops the timer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em style} & \\
+\hline
+{\em blink} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_adf295ed00cfab4ff8543923284035f89}\index{PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}!Show@{Show}}
+\index{Show@{Show}!PT200EmulatorWinforms.Controls.WinFormsCaretController@{PT200EmulatorWinforms.Controls.WinFormsCaretController}}
+\doxysubsubsection{\texorpdfstring{Show()}{Show()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_win_forms_caret_controller_adf295ed00cfab4ff8543923284035f89} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Win\+Forms\+Caret\+Controller.\+Show (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Makes the cursor visible. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\+Engine/\mbox{\hyperlink{_win_forms___render_target_8cs}{Win\+Forms\+\_\+\+Render\+Target.\+cs}}\end{DoxyCompactItemize}

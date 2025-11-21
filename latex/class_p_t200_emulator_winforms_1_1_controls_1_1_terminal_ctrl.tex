@@ -1,0 +1,383 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl}{}\label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+
+
+Class to handle the actual terminal control with the content from the rendering module.  
+
+
+Inheritance diagram for PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_acb77683b8351ff0a84e2caf5a53cc4d3}{Terminal\+Ctrl}} (\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}{Transport}} transport, \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_ui_config}{Ui\+Config}} ui\+Config)
+\begin{DoxyCompactList}\small\item\em Constructor for the terminal control, the heart of the application. Sets properties for Transport and \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_ui_config}{Ui\+Config}, initializes transport, sets font and other styles relevant. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2a0fba9f82493ed4aec8265200d352ad}{Initialize}} (\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}{Transport}} transport)
+\begin{DoxyCompactList}\small\item\em Retreives the actual terminal parser instance, measures cell size, creates the render target that\textquotesingle{}s needed to communicate with the rendering module, creates the caret controller and attaches the screen buffer instance retreived from terminal parser. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aa1ab3ef2694884f0465fb6122747c34e}{Attach\+Buffer}} (Screen\+Buffer buffer)
+\begin{DoxyCompactList}\small\item\em Sets the buffer property to the buffer instance received from the terminal parser, also sets the corresponding property for the render target and adds a handler for the Buffer\+Updated event. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a6174d1233e730be57e75faa236d51858}{Change\+Format}} (int cols, int rows)
+\begin{DoxyCompactList}\small\item\em Resize of the buffer when screen format is changed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a0b94d523ad94b160d3f1698151e5aa32}{Force\+Repaint}} ()
+\begin{DoxyCompactList}\small\item\em Forces a complete redraw of the control. \end{DoxyCompactList}\item 
+override Size \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a3ead3fc710ad522b81bd9418fab94cce}{Get\+Preferred\+Size}} (Size proposed\+Size)
+\begin{DoxyCompactList}\small\item\em Retreives the preferred size. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aec38e3a28b82e6588bd7620af49c5255}{Update\+Buffer\+From\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Resize screen buffer accordint to the control size. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2de3cb536e9ed38cf689a524f5cab90e}{Re\+Paint}} (Color fg, Color bg)
+\begin{DoxyCompactList}\small\item\em Sets the foreground and background color for the control to the supplied colors, then does the same for the render target and performs a force repaint for the colors to be applied. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a672d8e36ff15cd6efc6cfb3e5f98ecd6}{Set\+Cursor\+Style}} (Cursor\+Style style, bool blink)
+\begin{DoxyCompactList}\small\item\em Sets the cursor style to the supplied style with blink on or off. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Color \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2d9c8ac45a7f8073ca5af00085a20e75}{Translate\+Color}} (Style\+Info.\+Color color)
+\begin{DoxyCompactList}\small\item\em Translate colors from Style\+Info to Color. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a81c28ff6646ff74c8f44018e3ee4d68a}{On\+Paint}} (Paint\+Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Override of the On\+Paint event, as there are quite some more things that need to be done. Chekcs if a full redraw is to be done, checks that the screen buffer is established and returns if not, sets the properties Graphics and \+\_\+buffer for render target, calls the rendering module with the actual buffer and rendertarget, checks the status of the caret and draws it if visible and if the Diag overlay is chosen draws a diavnostic string. \end{DoxyCompactList}\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a581fbf7ae5480256b1fd5c6e3f16b5b2}{On\+Resize}} (Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Override of the On\+Resize event, returns if cell size is 0 otherwise performs the normal On\+Resize and then updates the buffer size. \end{DoxyCompactList}\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a74e0ea1d24eee70c1281349215a3c9aa}{On\+Layout}} (Layout\+Event\+Args levent)
+\begin{DoxyCompactList}\small\item\em Override of the On\+Layout event that first checks if layout is ready and if so calls the base.\+On\+Layout, otherwise just return. \end{DoxyCompactList}\item 
+override bool \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af8108bbf24aecb3c3fb12788f9372dae}{Is\+Input\+Key}} (Keys key\+Data)
+\begin{DoxyCompactList}\small\item\em Checks if key pressed is a non-\/character key that should be forwarded otherwise runs the base Is\+Input\+Key. \end{DoxyCompactList}\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a67be397b2fa7f49a9747c89e89b775dc}{On\+Key\+Press}} (Key\+Press\+Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Override of the On\+Key\+Press event, checks if the key pressed is a control character and returns if it is as those are handled in On\+Key\+Down. If input start column is not established sets the actual properties to avoid backing over prompts and other text supplied from the host and then persorms the base On\+Key\+Press Checks if the key pressed is one of the swedish letters and calls Map\+Swedish\+Char if so, else sends the actual key char to Input\+Mapper. \end{DoxyCompactList}\item 
+override void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a136545699a1f5945dec1c44bcff28d1f}{On\+Key\+Down}} (Key\+Event\+Args e)
+\begin{DoxyCompactList}\small\item\em Override of the On\+Key\+Down event. Returns if the actual key pressed is Ctrl, Shift or Menu When a character is received we first check if one of the previously ignored modifiers is pressed and sets the mods variable accordingly, then we check if the modifier is Ctrl and whether the actual key pressed is one of the letters A...Z, makes a logical and with hex 1F (0001 1111) to get the actual control char to send. After that we check to see if the character is an unmodified character key and returns if it is, then we translate the Win\+Forms key code to the corresponding scan code and send it to Input\+Mapper. If Input\+Mapper returns a byte and it\textquotesingle{}s a backspace check the cursor position, if it\textquotesingle{}s beyond the starting column perform the screen buffers backspace handling, then pass the actual byte on to the host. After that we check for Enter, Tab, Delete or Pause and sends the corresponding chars to the host for those keys. Last, but not least, we perform the base On\+Key\+Down. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Transport \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}{Transport}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+ICaret\+Controller \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a608860abca3c6de2eddb0588301f3b3a}{Caret\+Controller}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+int \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a49476902dd717e9cd117a9f7e45cd077}{char\+Width}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+int \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ad704cc9bbbd579763bc4d17823716771}{char\+Height}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+bool \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a29d96b993276790eb43386738f4618fd}{Show\+Diagnostic\+Overlay}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+IInput\+Mapper \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ac7a1cd220ddc83ceeee69b5e4d3e3832}{Input\+Mapper}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+bool \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af79396cbebb454f311922541104ce4ff}{Always\+Full\+Redraw}} = true\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class to handle the actual terminal control with the content from the rendering module. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_acb77683b8351ff0a84e2caf5a53cc4d3}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!TerminalCtrl@{TerminalCtrl}}
+\index{TerminalCtrl@{TerminalCtrl}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{TerminalCtrl()}{TerminalCtrl()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_acb77683b8351ff0a84e2caf5a53cc4d3} 
+PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Terminal\+Ctrl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}{Transport}}}]{transport}{, }\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_ui_config}{Ui\+Config}}}]{ui\+Config}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the terminal control, the heart of the application. Sets properties for Transport and \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_ui_config}{Ui\+Config}, initializes transport, sets font and other styles relevant. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em transport} & \\
+\hline
+{\em ui\+Config} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aa1ab3ef2694884f0465fb6122747c34e}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!AttachBuffer@{AttachBuffer}}
+\index{AttachBuffer@{AttachBuffer}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{AttachBuffer()}{AttachBuffer()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aa1ab3ef2694884f0465fb6122747c34e} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Attach\+Buffer (\begin{DoxyParamCaption}\item[{Screen\+Buffer}]{buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the buffer property to the buffer instance received from the terminal parser, also sets the corresponding property for the render target and adds a handler for the Buffer\+Updated event. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a6174d1233e730be57e75faa236d51858}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!ChangeFormat@{ChangeFormat}}
+\index{ChangeFormat@{ChangeFormat}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{ChangeFormat()}{ChangeFormat()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a6174d1233e730be57e75faa236d51858} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Change\+Format (\begin{DoxyParamCaption}\item[{int}]{cols}{, }\item[{int}]{rows}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Resize of the buffer when screen format is changed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cols} & \\
+\hline
+{\em rows} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a0b94d523ad94b160d3f1698151e5aa32}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!ForceRepaint@{ForceRepaint}}
+\index{ForceRepaint@{ForceRepaint}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{ForceRepaint()}{ForceRepaint()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a0b94d523ad94b160d3f1698151e5aa32} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Force\+Repaint (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Forces a complete redraw of the control. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a3ead3fc710ad522b81bd9418fab94cce}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!GetPreferredSize@{GetPreferredSize}}
+\index{GetPreferredSize@{GetPreferredSize}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{GetPreferredSize()}{GetPreferredSize()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a3ead3fc710ad522b81bd9418fab94cce} 
+override Size PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Get\+Preferred\+Size (\begin{DoxyParamCaption}\item[{Size}]{proposed\+Size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retreives the preferred size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em proposed\+Size} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Preferred size of the control
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2a0fba9f82493ed4aec8265200d352ad}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{Initialize()}{Initialize()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2a0fba9f82493ed4aec8265200d352ad} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Initialize (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}{Transport}}}]{transport}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retreives the actual terminal parser instance, measures cell size, creates the render target that\textquotesingle{}s needed to communicate with the rendering module, creates the caret controller and attaches the screen buffer instance retreived from terminal parser. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em transport} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af8108bbf24aecb3c3fb12788f9372dae}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!IsInputKey@{IsInputKey}}
+\index{IsInputKey@{IsInputKey}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{IsInputKey()}{IsInputKey()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af8108bbf24aecb3c3fb12788f9372dae} 
+override bool PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Is\+Input\+Key (\begin{DoxyParamCaption}\item[{Keys}]{key\+Data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Checks if key pressed is a non-\/character key that should be forwarded otherwise runs the base Is\+Input\+Key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key\+Data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the key is a non-\/character key to return otherwise the base Is\+Input\+Key
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a136545699a1f5945dec1c44bcff28d1f}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!OnKeyDown@{OnKeyDown}}
+\index{OnKeyDown@{OnKeyDown}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{OnKeyDown()}{OnKeyDown()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a136545699a1f5945dec1c44bcff28d1f} 
+override void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+On\+Key\+Down (\begin{DoxyParamCaption}\item[{Key\+Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Override of the On\+Key\+Down event. Returns if the actual key pressed is Ctrl, Shift or Menu When a character is received we first check if one of the previously ignored modifiers is pressed and sets the mods variable accordingly, then we check if the modifier is Ctrl and whether the actual key pressed is one of the letters A...Z, makes a logical and with hex 1F (0001 1111) to get the actual control char to send. After that we check to see if the character is an unmodified character key and returns if it is, then we translate the Win\+Forms key code to the corresponding scan code and send it to Input\+Mapper. If Input\+Mapper returns a byte and it\textquotesingle{}s a backspace check the cursor position, if it\textquotesingle{}s beyond the starting column perform the screen buffers backspace handling, then pass the actual byte on to the host. After that we check for Enter, Tab, Delete or Pause and sends the corresponding chars to the host for those keys. Last, but not least, we perform the base On\+Key\+Down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a67be397b2fa7f49a9747c89e89b775dc}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!OnKeyPress@{OnKeyPress}}
+\index{OnKeyPress@{OnKeyPress}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{OnKeyPress()}{OnKeyPress()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a67be397b2fa7f49a9747c89e89b775dc} 
+override void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+On\+Key\+Press (\begin{DoxyParamCaption}\item[{Key\+Press\+Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Override of the On\+Key\+Press event, checks if the key pressed is a control character and returns if it is as those are handled in On\+Key\+Down. If input start column is not established sets the actual properties to avoid backing over prompts and other text supplied from the host and then persorms the base On\+Key\+Press Checks if the key pressed is one of the swedish letters and calls Map\+Swedish\+Char if so, else sends the actual key char to Input\+Mapper. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a74e0ea1d24eee70c1281349215a3c9aa}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!OnLayout@{OnLayout}}
+\index{OnLayout@{OnLayout}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{OnLayout()}{OnLayout()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a74e0ea1d24eee70c1281349215a3c9aa} 
+override void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+On\+Layout (\begin{DoxyParamCaption}\item[{Layout\+Event\+Args}]{levent}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Override of the On\+Layout event that first checks if layout is ready and if so calls the base.\+On\+Layout, otherwise just return. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em levent} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a81c28ff6646ff74c8f44018e3ee4d68a}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!OnPaint@{OnPaint}}
+\index{OnPaint@{OnPaint}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{OnPaint()}{OnPaint()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a81c28ff6646ff74c8f44018e3ee4d68a} 
+override void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+On\+Paint (\begin{DoxyParamCaption}\item[{Paint\+Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Override of the On\+Paint event, as there are quite some more things that need to be done. Chekcs if a full redraw is to be done, checks that the screen buffer is established and returns if not, sets the properties Graphics and \+\_\+buffer for render target, calls the rendering module with the actual buffer and rendertarget, checks the status of the caret and draws it if visible and if the Diag overlay is chosen draws a diavnostic string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a581fbf7ae5480256b1fd5c6e3f16b5b2}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!OnResize@{OnResize}}
+\index{OnResize@{OnResize}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{OnResize()}{OnResize()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a581fbf7ae5480256b1fd5c6e3f16b5b2} 
+override void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+On\+Resize (\begin{DoxyParamCaption}\item[{Event\+Args}]{e}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Override of the On\+Resize event, returns if cell size is 0 otherwise performs the normal On\+Resize and then updates the buffer size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2de3cb536e9ed38cf689a524f5cab90e}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!RePaint@{RePaint}}
+\index{RePaint@{RePaint}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{RePaint()}{RePaint()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2de3cb536e9ed38cf689a524f5cab90e} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Re\+Paint (\begin{DoxyParamCaption}\item[{Color}]{fg}{, }\item[{Color}]{bg}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the foreground and background color for the control to the supplied colors, then does the same for the render target and performs a force repaint for the colors to be applied. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fg} & \\
+\hline
+{\em bg} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a672d8e36ff15cd6efc6cfb3e5f98ecd6}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!SetCursorStyle@{SetCursorStyle}}
+\index{SetCursorStyle@{SetCursorStyle}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{SetCursorStyle()}{SetCursorStyle()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a672d8e36ff15cd6efc6cfb3e5f98ecd6} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Set\+Cursor\+Style (\begin{DoxyParamCaption}\item[{Cursor\+Style}]{style}{, }\item[{bool}]{blink}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the cursor style to the supplied style with blink on or off. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em style} & \\
+\hline
+{\em blink} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2d9c8ac45a7f8073ca5af00085a20e75}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!TranslateColor@{TranslateColor}}
+\index{TranslateColor@{TranslateColor}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{TranslateColor()}{TranslateColor()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a2d9c8ac45a7f8073ca5af00085a20e75} 
+Color PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Translate\+Color (\begin{DoxyParamCaption}\item[{Style\+Info.\+Color}]{color}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Translate colors from Style\+Info to Color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+color equivalent of the Style\+Info color enum
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aec38e3a28b82e6588bd7620af49c5255}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!UpdateBufferFromSize@{UpdateBufferFromSize}}
+\index{UpdateBufferFromSize@{UpdateBufferFromSize}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{UpdateBufferFromSize()}{UpdateBufferFromSize()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_aec38e3a28b82e6588bd7620af49c5255} 
+void PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Update\+Buffer\+From\+Size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Resize screen buffer accordint to the control size. 
+
+
+
+\label{doc-property-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_doc-property-members}
+\doxysubsection{Property Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af79396cbebb454f311922541104ce4ff}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!AlwaysFullRedraw@{AlwaysFullRedraw}}
+\index{AlwaysFullRedraw@{AlwaysFullRedraw}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{AlwaysFullRedraw}{AlwaysFullRedraw}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_af79396cbebb454f311922541104ce4ff} 
+bool PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Always\+Full\+Redraw = true\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a608860abca3c6de2eddb0588301f3b3a}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!CaretController@{CaretController}}
+\index{CaretController@{CaretController}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{CaretController}{CaretController}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a608860abca3c6de2eddb0588301f3b3a} 
+ICaret\+Controller PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Caret\+Controller\hspace{0.3cm}{\ttfamily [get]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ad704cc9bbbd579763bc4d17823716771}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!charHeight@{charHeight}}
+\index{charHeight@{charHeight}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{charHeight}{charHeight}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ad704cc9bbbd579763bc4d17823716771} 
+int PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+char\+Height\hspace{0.3cm}{\ttfamily [get]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a49476902dd717e9cd117a9f7e45cd077}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!charWidth@{charWidth}}
+\index{charWidth@{charWidth}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{charWidth}{charWidth}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a49476902dd717e9cd117a9f7e45cd077} 
+int PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+char\+Width\hspace{0.3cm}{\ttfamily [get]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ac7a1cd220ddc83ceeee69b5e4d3e3832}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!InputMapper@{InputMapper}}
+\index{InputMapper@{InputMapper}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{InputMapper}{InputMapper}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_ac7a1cd220ddc83ceeee69b5e4d3e3832} 
+IInput\+Mapper PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Input\+Mapper\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a29d96b993276790eb43386738f4618fd}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!ShowDiagnosticOverlay@{ShowDiagnosticOverlay}}
+\index{ShowDiagnosticOverlay@{ShowDiagnosticOverlay}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{ShowDiagnosticOverlay}{ShowDiagnosticOverlay}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a29d96b993276790eb43386738f4618fd} 
+bool PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Show\+Diagnostic\+Overlay\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef}\index{PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}!Transport@{Transport}}
+\index{Transport@{Transport}!PT200EmulatorWinforms.Controls.TerminalCtrl@{PT200EmulatorWinforms.Controls.TerminalCtrl}}
+\doxysubsubsection{\texorpdfstring{Transport}{Transport}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_controls_1_1_terminal_ctrl_a5265a5b26f760c9fbcb9dee2b2f518ef} 
+Transport PT200\+Emulator\+Winforms.\+Controls.\+Terminal\+Ctrl.\+Transport\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\+Engine/\mbox{\hyperlink{_win_forms___render_target_8cs}{Win\+Forms\+\_\+\+Render\+Target.\+cs}}\end{DoxyCompactItemize}

@@ -1,0 +1,159 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Engine.\+Transport Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}{}\label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+
+
+Class that acts as bridge between the UI and PT200\+\_\+\+Transport for Telnet connection.  
+
+
+Inheritance diagram for PT200\+Emulator\+Winforms.\+Engine.\+Transport\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_afbdfd74f302c26398d11b095738816d4}{Transport}} (\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller}{Status\+Line\+Controller}} status\+Line)
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}{Transport} class, establish link to the statusline to update conmmunocation fields. \end{DoxyCompactList}\item 
+async Task \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a55822d08b757776da29f1354014cff4c}{Connect}} (Cancellation\+Token cancellation\+Token, string host="{}localhost"{}, int port=2323)
+\begin{DoxyCompactList}\small\item\em Connect establishes the Telnet connection and uses the supplied byte stream to start receive loop. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a65da226ab09537ad77498e0fb33299e5}{Send}} (byte\mbox{[}$\,$\mbox{]} data)
+\begin{DoxyCompactList}\small\item\em Sends the supplied byte array to the established byte stream. \end{DoxyCompactList}\item 
+async Task \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a90ecd0b01c33f32e7b96297a43e92707}{Disconnect}} ()
+\begin{DoxyCompactList}\small\item\em Disconnects the Telnet connection. \end{DoxyCompactList}\item 
+async Task \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a2574935b9fa753e99dc64a4bf52386ce}{Reconnect}} (Cancellation\+Token cancellation\+Token)
+\begin{DoxyCompactList}\small\item\em Disconnects the current Telnet connection, waits for a half second and then tries to re-\/establish a connection with the actual host and port. \end{DoxyCompactList}\item 
+Terminal\+Parser \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_accde05cec52e584ae4a439304ab772d2}{Get\+Parser}} ()
+\begin{DoxyCompactList}\small\item\em Returns the current terminal parser instance for use in other modules. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a57c3de5fb1bb5719537ad949fa88096d}{Dispose}} ()
+\begin{DoxyCompactList}\small\item\em Clean up after disconnect. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class that acts as bridge between the UI and PT200\+\_\+\+Transport for Telnet connection. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_afbdfd74f302c26398d11b095738816d4}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Transport@{Transport}}
+\index{Transport@{Transport}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Transport()}{Transport()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_afbdfd74f302c26398d11b095738816d4} 
+PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Transport (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller}{Status\+Line\+Controller}}}]{status\+Line}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for \doxylink{class_p_t200_emulator_winforms_1_1_engine_1_1_transport}{Transport} class, establish link to the statusline to update conmmunocation fields. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status\+Line} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a55822d08b757776da29f1354014cff4c}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Connect@{Connect}}
+\index{Connect@{Connect}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Connect()}{Connect()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a55822d08b757776da29f1354014cff4c} 
+async Task PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Connect (\begin{DoxyParamCaption}\item[{Cancellation\+Token}]{cancellation\+Token}{, }\item[{string}]{host}{ = {\ttfamily "{}localhost"{}}, }\item[{int}]{port}{ = {\ttfamily 2323}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Connect establishes the Telnet connection and uses the supplied byte stream to start receive loop. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cancellation\+Token} & \\
+\hline
+{\em host} & \\
+\hline
+{\em port} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Invalid\+Operation\+Exception} & \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a90ecd0b01c33f32e7b96297a43e92707}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Disconnect@{Disconnect}}
+\index{Disconnect@{Disconnect}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Disconnect()}{Disconnect()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a90ecd0b01c33f32e7b96297a43e92707} 
+async Task PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Disconnect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Disconnects the Telnet connection. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a57c3de5fb1bb5719537ad949fa88096d}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Dispose@{Dispose}}
+\index{Dispose@{Dispose}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Dispose()}{Dispose()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a57c3de5fb1bb5719537ad949fa88096d} 
+void PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Dispose (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Clean up after disconnect. 
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_accde05cec52e584ae4a439304ab772d2}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!GetParser@{GetParser}}
+\index{GetParser@{GetParser}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{GetParser()}{GetParser()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_accde05cec52e584ae4a439304ab772d2} 
+Terminal\+Parser PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Get\+Parser (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the current terminal parser instance for use in other modules. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a2574935b9fa753e99dc64a4bf52386ce}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Reconnect@{Reconnect}}
+\index{Reconnect@{Reconnect}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Reconnect()}{Reconnect()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a2574935b9fa753e99dc64a4bf52386ce} 
+async Task PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Reconnect (\begin{DoxyParamCaption}\item[{Cancellation\+Token}]{cancellation\+Token}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Disconnects the current Telnet connection, waits for a half second and then tries to re-\/establish a connection with the actual host and port. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cancellation\+Token} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a65da226ab09537ad77498e0fb33299e5}\index{PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}!Send@{Send}}
+\index{Send@{Send}!PT200EmulatorWinforms.Engine.Transport@{PT200EmulatorWinforms.Engine.Transport}}
+\doxysubsubsection{\texorpdfstring{Send()}{Send()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_engine_1_1_transport_a65da226ab09537ad77498e0fb33299e5} 
+void PT200\+Emulator\+Winforms.\+Engine.\+Transport.\+Send (\begin{DoxyParamCaption}\item[{byte\mbox{[}$\,$\mbox{]}}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sends the supplied byte array to the established byte stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\+Engine/\mbox{\hyperlink{_transport_8cs}{Transport.\+cs}}\end{DoxyCompactItemize}

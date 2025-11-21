@@ -1,6 +1,8 @@
 {
-  "DefaultLogLevel": 0,
-  "ScreenFormat": 0,
-  "DisplayTheme": 2,
-  "CaretStylePreference": 1
+  "DefaultLogLevel": "Debug",
+  "ScreenFormat": "S80x24",
+  "DisplayTheme": "Amber",
+  "CursorStylePreference": "HorizontalBar",
+  "CursorBlink": true,
+  "DebugControls": false
 }

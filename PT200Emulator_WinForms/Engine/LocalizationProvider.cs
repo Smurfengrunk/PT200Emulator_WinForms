@@ -1,35 +1,41 @@
-﻿using Microsoft.VisualBasic;
+﻿#pragma warning disable CA1707
 using PT200_Logging;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace PT200Emulator_WinForms.Engine
+namespace PT200EmulatorWinforms.Engine
 {
+    /// <summary>
+    /// Class to handle localization
+    /// </summary>
     public class LocalizationProvider
     {
         private Dictionary<string, string> strings;
         private Dictionary<string, string> fallbackStrings;
         public string Language { get; }
 
-        // Statisk "Current" instans som används globalt
-        //public static LocalizationProvider Current { get; private set; }
-        //    = new LocalizationProvider(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+        /// <summary>
+        /// Static reference to simplify reference to localization strings
+        /// </summary>
         public static LocalizationProvider Current { get; private set; }
             = new LocalizationProvider("en");
 
-        public LocalizationProvider(string languageCode = "sv")
+       /// <summary>
+       /// Constructor for the LocalizationProvider class, sets the Language property, loads the actual localization json for the given language and if that fails load the english messages
+       /// </summary>
+       /// <param name="languageCode"></param>
+       public LocalizationProvider(string languageCode = "sv")
         {
             Language = languageCode;
             strings = Load(languageCode);
             fallbackStrings ??= Load("en");
         }
 
+        /// <summary>
+        /// Load the strings from the config file for the given language and populate dictionary
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         private Dictionary<string, string> Load(string code)
         {
             var path = Path.Combine("Resources", $"Strings.{code}.json");
@@ -51,6 +57,12 @@ namespace PT200Emulator_WinForms.Engine
             }
         }
 
+        /// <summary>
+        /// Retrieves the localized string for the given key with the given args if available
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="args"></param>
+        /// <returns>Formatted string for the actual language or english if it doesn't exist or an error message if key isn't found at all</returns>
         public string Get(string key, params object[] args)
         {
             if (strings.TryGetValue(key, out var template))
@@ -66,11 +78,17 @@ namespace PT200Emulator_WinForms.Engine
             return key;
         }
 
-        private string Format(string template, object[] args)
+        /// <summary>
+        /// Formats the return string as either the given message or message with params if supplied
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static string Format(string template, object[] args)
         {
             if (args == null || args.Length == 0)
                 return template; // ingen formatering behövs
-            return string.Format(template, args);
+            return String.Format(CultureInfo.InvariantCulture, template, args);
         }
     }
 }

@@ -1,0 +1,193 @@
+\doxysection{PT200\+Emulator\+Winforms.\+Status\+Line\+Controller Class Reference}
+\hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller}{}\label{class_p_t200_emulator_winforms_1_1_status_line_controller}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+
+
+Class for handling the status bar.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a52db41ba501e9b403b17f45562943c92}{Status\+Line\+Controller}} (Tool\+Strip\+Status\+Label messagelabel, Tool\+Strip\+Status\+Label loglabel, Tool\+Strip\+Status\+Label online, Tool\+Strip\+Status\+Label system, Tool\+Strip\+Status\+Label dsr, Tool\+Strip\+Status\+Label g0g1, Status\+Strip status\+Line)
+\begin{DoxyCompactList}\small\item\em Constructor for the status line controller. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a916b3c0de2cbded90d03b7003a7102c5}{Set\+Online}} (bool online)
+\begin{DoxyCompactList}\small\item\em Set content of the Online filed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a482138750568f6f2e4164d8532935544}{Set\+System\+Ready}} (bool ready, bool lng)
+\begin{DoxyCompactList}\small\item\em Set content of the System\+Ready field. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a7e7e3220a294f8784cde6b13ac1b387a}{Set\+Dsr}} (bool xoff)
+\begin{DoxyCompactList}\small\item\em Set content of the DSR field. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a26a444a09fec6d0a74a32b44bdfb5a98}{Set\+Charset}} (bool g1\+Active)
+\begin{DoxyCompactList}\small\item\em Set content of the charset field. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a91ee5ba2dbbd0620a3e72b91a3e2cc45}{Set\+Log\+Level}} (string level)
+\begin{DoxyCompactList}\small\item\em Reflect current logging level on status line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a612551b49b877ac5ab09294d77290a71}{Set\+Message}} (string message)
+\begin{DoxyCompactList}\small\item\em Set content of the message field. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a42b7a8a20eb3a7da1c99b95ed1bf0a86}{Re\+Paint}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Terminal\+Ctrl \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a490ca33e4ccb01d7218f98201de67f9f}{Terminal\+Ctrl}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+Ui\+Config \mbox{\hyperlink{class_p_t200_emulator_winforms_1_1_status_line_controller_a3b224b4b5456de89ab7d3b483d49094a}{Ui\+Config}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class for handling the status bar. 
+
+\label{doc-constructors}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a52db41ba501e9b403b17f45562943c92}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!StatusLineController@{StatusLineController}}
+\index{StatusLineController@{StatusLineController}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{StatusLineController()}{StatusLineController()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a52db41ba501e9b403b17f45562943c92} 
+PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Status\+Line\+Controller (\begin{DoxyParamCaption}\item[{Tool\+Strip\+Status\+Label}]{messagelabel}{, }\item[{Tool\+Strip\+Status\+Label}]{loglabel}{, }\item[{Tool\+Strip\+Status\+Label}]{online}{, }\item[{Tool\+Strip\+Status\+Label}]{system}{, }\item[{Tool\+Strip\+Status\+Label}]{dsr}{, }\item[{Tool\+Strip\+Status\+Label}]{g0g1}{, }\item[{Status\+Strip}]{status\+Line}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the status line controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em messagelabel} & \\
+\hline
+{\em loglabel} & \\
+\hline
+{\em online} & \\
+\hline
+{\em system} & \\
+\hline
+{\em dsr} & \\
+\hline
+{\em g0g1} & \\
+\hline
+{\em status\+Line} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a42b7a8a20eb3a7da1c99b95ed1bf0a86}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!RePaint@{RePaint}}
+\index{RePaint@{RePaint}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{RePaint()}{RePaint()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a42b7a8a20eb3a7da1c99b95ed1bf0a86} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Re\+Paint (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a26a444a09fec6d0a74a32b44bdfb5a98}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetCharset@{SetCharset}}
+\index{SetCharset@{SetCharset}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetCharset()}{SetCharset()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a26a444a09fec6d0a74a32b44bdfb5a98} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+Charset (\begin{DoxyParamCaption}\item[{bool}]{g1\+Active}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set content of the charset field. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em g1\+Active} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a7e7e3220a294f8784cde6b13ac1b387a}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetDsr@{SetDsr}}
+\index{SetDsr@{SetDsr}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetDsr()}{SetDsr()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a7e7e3220a294f8784cde6b13ac1b387a} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+Dsr (\begin{DoxyParamCaption}\item[{bool}]{xoff}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set content of the DSR field. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em xoff} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a91ee5ba2dbbd0620a3e72b91a3e2cc45}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetLogLevel@{SetLogLevel}}
+\index{SetLogLevel@{SetLogLevel}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetLogLevel()}{SetLogLevel()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a91ee5ba2dbbd0620a3e72b91a3e2cc45} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+Log\+Level (\begin{DoxyParamCaption}\item[{string}]{level}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reflect current logging level on status line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em level} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a612551b49b877ac5ab09294d77290a71}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetMessage@{SetMessage}}
+\index{SetMessage@{SetMessage}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetMessage()}{SetMessage()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a612551b49b877ac5ab09294d77290a71} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+Message (\begin{DoxyParamCaption}\item[{string}]{message}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set content of the message field. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a916b3c0de2cbded90d03b7003a7102c5}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetOnline@{SetOnline}}
+\index{SetOnline@{SetOnline}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetOnline()}{SetOnline()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a916b3c0de2cbded90d03b7003a7102c5} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+Online (\begin{DoxyParamCaption}\item[{bool}]{online}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set content of the Online filed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em online} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a482138750568f6f2e4164d8532935544}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!SetSystemReady@{SetSystemReady}}
+\index{SetSystemReady@{SetSystemReady}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{SetSystemReady()}{SetSystemReady()}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a482138750568f6f2e4164d8532935544} 
+void PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Set\+System\+Ready (\begin{DoxyParamCaption}\item[{bool}]{ready}{, }\item[{bool}]{lng}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set content of the System\+Ready field. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ready} & \\
+\hline
+{\em lng} & \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-property-members}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_doc-property-members}
+\doxysubsection{Property Documentation}
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a490ca33e4ccb01d7218f98201de67f9f}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!TerminalCtrl@{TerminalCtrl}}
+\index{TerminalCtrl@{TerminalCtrl}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{TerminalCtrl}{TerminalCtrl}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a490ca33e4ccb01d7218f98201de67f9f} 
+Terminal\+Ctrl PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Terminal\+Ctrl\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\Hypertarget{class_p_t200_emulator_winforms_1_1_status_line_controller_a3b224b4b5456de89ab7d3b483d49094a}\index{PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}!UiConfig@{UiConfig}}
+\index{UiConfig@{UiConfig}!PT200EmulatorWinforms.StatusLineController@{PT200EmulatorWinforms.StatusLineController}}
+\doxysubsubsection{\texorpdfstring{UiConfig}{UiConfig}}
+{\footnotesize\ttfamily \label{class_p_t200_emulator_winforms_1_1_status_line_controller_a3b224b4b5456de89ab7d3b483d49094a} 
+Ui\+Config PT200\+Emulator\+Winforms.\+Status\+Line\+Controller.\+Ui\+Config\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+PT200\+Emulator\+\_\+\+Win\+Forms/\mbox{\hyperlink{_p_t200_8cs}{PT200.\+cs}}\end{DoxyCompactItemize}
