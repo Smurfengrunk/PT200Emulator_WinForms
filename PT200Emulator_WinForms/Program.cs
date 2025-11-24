@@ -1,3 +1,5 @@
+#pragma warning disable CA1707
+
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;

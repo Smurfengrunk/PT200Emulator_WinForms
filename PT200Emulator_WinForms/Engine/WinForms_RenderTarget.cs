@@ -10,6 +10,7 @@ using PT200_Rendering;
 
 using PT200EmulatorWinforms.Engine;
 
+using System.Net.Http.Metrics;
 using System.Text;
 
 using static PT200_Rendering.IRenderTarget;
@@ -38,6 +39,7 @@ namespace PT200EmulatorWinforms.Controls
         private UiConfig _uiConfig;
         private int inputStartCol, inputStartRow;
         private bool inputStart;
+        private bool ClearScreen;
 
 
         /// <summary>
@@ -169,10 +171,10 @@ namespace PT200EmulatorWinforms.Controls
             _parser = transport.GetParser();
             // Mät cellstorlek exakt
             charWidth = MeasureCharWidth(_font, _parser.Screenbuffer.Cols);
-            charHeight = _font.Height;
+            charHeight = TextRenderer.MeasureText("█", _font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.NoClipping).Height;
             _renderTarget = new WinFormsRenderTarget(
-                                   this.CreateGraphics(), _font, charWidth, charHeight,
-                                   this.ForeColor, this.BackColor, _buffer);
+                       this.CreateGraphics(), _font, charWidth, charHeight,
+                       this.ForeColor, this.BackColor, _buffer);
             _renderTarget.Terminal = this;
             _caretController = new WinFormsCaretController(this, _renderTarget, _uiConfig.CursorStylePreference, _buffer, this);
             _parser.Screenbuffer.Scrolled += () => _core.ForceFullRender();
@@ -222,6 +224,15 @@ namespace PT200EmulatorWinforms.Controls
             _renderTarget.Graphics = e.Graphics;
             _renderTarget._buffer = _buffer;
 
+            //Clear screen
+            if (ClearScreen)
+            {
+                _buffer.ClearScreen();
+                _renderTarget.Clear();
+                ClearScreen = false;
+                return;
+            }
+
             // Rita texten
             _core.Render(_buffer, _renderTarget);
 
@@ -245,6 +256,9 @@ namespace PT200EmulatorWinforms.Controls
         public void ChangeFormat(int cols, int rows)
         {
             _buffer.Resize(rows, cols);
+            ClearScreen = true;
+            _renderTarget.SetCaret(_buffer.CursorRow, _buffer.CursorCol);
+            this.LogDebug($"[ChangeFormat] Cursor position after resize is ({_renderTarget._caretRow}, {_renderTarget._caretCol})");
             this.Invalidate();
         }
 
@@ -573,7 +587,7 @@ namespace PT200EmulatorWinforms.Controls
         private int CharHeight;
         private Color _fore;
         private Color _back;
-        public ScreenBuffer _buffer;
+        public ScreenBuffer _buffer { get; set; }
         internal bool _caretVisible;
         internal int _caretRow;
         internal int _caretCol;
@@ -606,7 +620,19 @@ namespace PT200EmulatorWinforms.Controls
         /// <summary>
         /// Clears screen
         /// </summary>
-        public void Clear() => Graphics.Clear(_back);
+        public void Clear()
+        {
+            try
+            {
+                Graphics.Clear(_back);
+                Terminal.ForceRepaint();
+            }
+            catch (Exception e)
+            {
+                this.LogDebug($"[WinFormsRenderTarget.Clear] Exception {e.Message} occured, Graphics.Clear({_back.Name})");
+                Terminal.ForceRepaint();
+            }
+        }
 
         /// <summary>
         /// The main method to communicate with the renderer. Measures the width and height of the actual cell, retrieves attributes from ZoneAttributes.
@@ -618,6 +644,7 @@ namespace PT200EmulatorWinforms.Controls
         {
             int x = run.StartCol * CharWidth;
             int y = run.Row * CharHeight;
+
 
             var attr = _buffer.ZoneAttributes[run.Row, run.StartCol];
             var reverse = attr.ReverseVideo;
@@ -693,6 +720,7 @@ namespace PT200EmulatorWinforms.Controls
         {
             if (!_caretVisible || _buffer == null) return;
 
+            CharHeight = Math.Max(1, Terminal.ClientSize.Height / _buffer.Rows);
             int x = _caretCol * CharWidth;
             int y = _caretRow * CharHeight;
 

@@ -4,5 +4,5 @@
   "DisplayTheme": "Amber",
   "CursorStylePreference": "HorizontalBar",
   "CursorBlink": true,
-  "DebugControls": false
+  "DebugControls": true
 }
