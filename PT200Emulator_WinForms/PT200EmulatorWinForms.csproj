@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <StartupObject>PT200EmulatorWinforms.Program</StartupObject>
+    <StartupObject>PT200EmulatorWinForms.Program</StartupObject>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>preview-recommended</AnalysisLevel>
     <NeutralLanguage>en-US</NeutralLanguage>

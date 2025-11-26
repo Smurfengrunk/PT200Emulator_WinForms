@@ -6,7 +6,7 @@ using Serilog.Events;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace PT200EmulatorWinforms
+namespace PT200EmulatorWinForms
 {
     /// <summary>
     /// Initializing logging configuration and starting application

@@ -1,4 +1,4 @@
-﻿namespace PT200EmulatorWinforms
+﻿namespace PT200EmulatorWinForms
 {
     /// <summary>
     /// Opens a form in a separate window to use for logging purposes if debug flag is true

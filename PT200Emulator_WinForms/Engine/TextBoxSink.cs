@@ -1,7 +1,7 @@
 ﻿using Serilog.Core;
 using Serilog.Events;
 
-namespace PT200EmulatorWinforms
+namespace PT200EmulatorWinForms
 {
     /// <summary>
     /// Textbox sink for the logging form

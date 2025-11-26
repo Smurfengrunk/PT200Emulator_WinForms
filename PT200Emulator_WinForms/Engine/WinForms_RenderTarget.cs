@@ -8,14 +8,14 @@ using PT200_Parser;
 
 using PT200_Rendering;
 
-using PT200EmulatorWinforms.Engine;
+using PT200EmulatorWinForms.Engine;
 
 using System.Net.Http.Metrics;
 using System.Text;
 
 using static PT200_Rendering.IRenderTarget;
 
-namespace PT200EmulatorWinforms.Controls
+namespace PT200EmulatorWinForms.Controls
 {
     /// <summary>
     /// Class to handle the actual terminal control with the content from the rendering module

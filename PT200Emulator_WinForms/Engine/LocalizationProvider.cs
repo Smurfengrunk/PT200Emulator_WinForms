@@ -3,7 +3,7 @@ using PT200_Logging;
 using System.Globalization;
 using System.Text.Json;
 
-namespace PT200EmulatorWinforms.Engine
+namespace PT200EmulatorWinForms.Engine
 {
     /// <summary>
     /// Class to handle localization

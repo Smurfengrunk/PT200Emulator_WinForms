@@ -1,9 +1,9 @@
 ﻿using PT200_Logging;
 using PT200_Parser;
 using PT200_Transport;
-using PT200EmulatorWinforms.Controls;
+using PT200EmulatorWinForms.Controls;
 
-namespace PT200EmulatorWinforms.Engine
+namespace PT200EmulatorWinForms.Engine
 {
     /// <summary>
     /// Class that acts as bridge between the UI and PT200_Transport for Telnet connection
@@ -36,6 +36,7 @@ namespace PT200EmulatorWinforms.Engine
             {
                 this.LogInformation(LocalizationProvider.Current.Get("dialog.disconnect.error.connected", _host, _port));
                 await Disconnected(_connected);
+                Application.Exit();
             };
         }
 

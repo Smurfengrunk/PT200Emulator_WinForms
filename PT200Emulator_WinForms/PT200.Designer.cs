@@ -1,7 +1,7 @@
-﻿using PT200EmulatorWinforms.Engine;
+﻿using PT200EmulatorWinForms.Engine;
 using System.Windows.Forms;
 
-namespace PT200EmulatorWinforms
+namespace PT200EmulatorWinForms
 {
     partial class PT200
     {
@@ -31,24 +31,6 @@ namespace PT200EmulatorWinforms
         /// </summary>
         private void InitializeComponent()
         {
-            SidePanel = new Panel();
-            cursorStyleCombo = new ComboBox();
-            BlinkBox = new CheckBox();
-            ReconnectButton = new Button();
-            FullRedrawButton = new Button();
-            DiagButton = new Button();
-            DisconnectButton = new Button();
-            ConnectButton = new Button();
-            PortTextBox = new TextBox();
-            HostTextBox = new TextBox();
-            LogLevelCombo = new ComboBox();
-            ScreenFormatCombo = new ComboBox();
-            rbPanel = new Panel();
-            rbGreen = new RadioButton();
-            rbColor = new RadioButton();
-            rbBlue = new RadioButton();
-            rbAmber = new RadioButton();
-            rbWhite = new RadioButton();
             StatusLine = new StatusStrip();
             messageLabel = new ToolStripStatusLabel();
             logLabel = new ToolStripStatusLabel();
@@ -62,237 +44,9 @@ namespace PT200EmulatorWinforms
             numLockLabel = new ToolStripStatusLabel();
             clockLabel = new ToolStripStatusLabel();
             layoutPanel = new TableLayoutPanel();
-            SidePanel.SuspendLayout();
-            rbPanel.SuspendLayout();
             StatusLine.SuspendLayout();
             layoutPanel.SuspendLayout();
             SuspendLayout();
-            // 
-            // SidePanel
-            // 
-            SidePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            SidePanel.BackColor = Color.DarkGray;
-            SidePanel.BorderStyle = BorderStyle.Fixed3D;
-            SidePanel.CausesValidation = false;
-            SidePanel.Controls.Add(cursorStyleCombo);
-            SidePanel.Controls.Add(BlinkBox);
-            SidePanel.Controls.Add(ReconnectButton);
-            SidePanel.Controls.Add(FullRedrawButton);
-            SidePanel.Controls.Add(DiagButton);
-            SidePanel.Controls.Add(DisconnectButton);
-            SidePanel.Controls.Add(ConnectButton);
-            SidePanel.Controls.Add(PortTextBox);
-            SidePanel.Controls.Add(HostTextBox);
-            SidePanel.Controls.Add(LogLevelCombo);
-            SidePanel.Controls.Add(ScreenFormatCombo);
-            SidePanel.Controls.Add(rbPanel);
-            SidePanel.Dock = DockStyle.Left;
-            SidePanel.Location = new Point(0, 0);
-            SidePanel.Margin = new Padding(0);
-            SidePanel.MinimumSize = new Size(180, 450);
-            SidePanel.Name = "SidePanel";
-            layoutPanel.SetRowSpan(SidePanel, 2);
-            SidePanel.Size = new Size(180, 450);
-            SidePanel.TabIndex = 2;
-            // 
-            // cursorStyleCombo
-            // 
-            cursorStyleCombo.FormattingEnabled = true;
-            cursorStyleCombo.Location = new Point(3, 250);
-            cursorStyleCombo.Name = "cursorStyleCombo";
-            cursorStyleCombo.Size = new Size(104, 23);
-            cursorStyleCombo.TabIndex = 16;
-            cursorStyleCombo.SelectedIndexChanged += cursorStyleCombo_SelectedIndexChanged;
-            // 
-            // BlinkBox
-            // 
-            BlinkBox.AutoSize = true;
-            BlinkBox.Location = new Point(113, 254);
-            BlinkBox.Name = "BlinkBox";
-            BlinkBox.Size = new Size(52, 19);
-            BlinkBox.TabIndex = 15;
-            BlinkBox.Text = "Blink";
-            BlinkBox.UseVisualStyleBackColor = true;
-            BlinkBox.CheckedChanged += BlinkBox_CheckedChanged;
-            // 
-            // ReconnectButton
-            // 
-            ReconnectButton.Anchor = AnchorStyles.Left;
-            ReconnectButton.Location = new Point(3, 283);
-            ReconnectButton.Name = "ReconnectButton";
-            ReconnectButton.Size = new Size(75, 23);
-            ReconnectButton.TabIndex = 14;
-            ReconnectButton.TabStop = false;
-            ReconnectButton.Text = "Reconnect";
-            ReconnectButton.UseVisualStyleBackColor = true;
-            ReconnectButton.Visible = false;
-            ReconnectButton.Click += ReconnectButton_Click;
-            // 
-            // FullRedrawButton
-            // 
-            FullRedrawButton.Anchor = AnchorStyles.Left;
-            FullRedrawButton.Location = new Point(95, 312);
-            FullRedrawButton.Name = "FullRedrawButton";
-            FullRedrawButton.Size = new Size(76, 23);
-            FullRedrawButton.TabIndex = 13;
-            FullRedrawButton.TabStop = false;
-            FullRedrawButton.Text = "Fullredraw";
-            FullRedrawButton.UseVisualStyleBackColor = true;
-            FullRedrawButton.Visible = false;
-            FullRedrawButton.Click += FullRedrawButton_Click;
-            // 
-            // DiagButton
-            // 
-            DiagButton.Anchor = AnchorStyles.Left;
-            DiagButton.Location = new Point(3, 312);
-            DiagButton.Name = "DiagButton";
-            DiagButton.Size = new Size(86, 23);
-            DiagButton.TabIndex = 12;
-            DiagButton.TabStop = false;
-            DiagButton.Text = "Diag";
-            DiagButton.UseVisualStyleBackColor = true;
-            DiagButton.Visible = false;
-            DiagButton.Click += DiagButton_Click;
-            // 
-            // DisconnectButton
-            // 
-            DisconnectButton.Anchor = AnchorStyles.Left;
-            DisconnectButton.Location = new Point(81, 221);
-            DisconnectButton.Name = "DisconnectButton";
-            DisconnectButton.Size = new Size(75, 23);
-            DisconnectButton.TabIndex = 11;
-            DisconnectButton.TabStop = false;
-            DisconnectButton.Text = "Disconnect";
-            DisconnectButton.UseVisualStyleBackColor = true;
-            // 
-            // ConnectButton
-            // 
-            ConnectButton.Anchor = AnchorStyles.Left;
-            ConnectButton.Location = new Point(3, 221);
-            ConnectButton.Name = "ConnectButton";
-            ConnectButton.Size = new Size(75, 23);
-            ConnectButton.TabIndex = 10;
-            ConnectButton.TabStop = false;
-            ConnectButton.Text = "Connect";
-            ConnectButton.UseVisualStyleBackColor = true;
-            ConnectButton.Click += ConnectButton_Click;
-            // 
-            // PortTextBox
-            // 
-            PortTextBox.Anchor = AnchorStyles.Left;
-            PortTextBox.Location = new Point(7, 192);
-            PortTextBox.Name = "PortTextBox";
-            PortTextBox.Size = new Size(100, 23);
-            PortTextBox.TabIndex = 9;
-            PortTextBox.TabStop = false;
-            PortTextBox.Text = "2323";
-            // 
-            // HostTextBox
-            // 
-            HostTextBox.Anchor = AnchorStyles.Left;
-            HostTextBox.Location = new Point(7, 163);
-            HostTextBox.Name = "HostTextBox";
-            HostTextBox.Size = new Size(150, 23);
-            HostTextBox.TabIndex = 8;
-            HostTextBox.TabStop = false;
-            HostTextBox.Text = "localhost";
-            HostTextBox.TextChanged += HostTextBox_TextChanged;
-            // 
-            // LogLevelCombo
-            // 
-            LogLevelCombo.Anchor = AnchorStyles.Left;
-            LogLevelCombo.FormattingEnabled = true;
-            LogLevelCombo.Location = new Point(7, 134);
-            LogLevelCombo.Name = "LogLevelCombo";
-            LogLevelCombo.Size = new Size(121, 23);
-            LogLevelCombo.TabIndex = 7;
-            LogLevelCombo.TabStop = false;
-            LogLevelCombo.SelectedIndexChanged += LogLevelCombo_SelectedIndexChanged;
-            // 
-            // ScreenFormatCombo
-            // 
-            ScreenFormatCombo.Anchor = AnchorStyles.Left;
-            ScreenFormatCombo.FormattingEnabled = true;
-            ScreenFormatCombo.Location = new Point(7, 105);
-            ScreenFormatCombo.Name = "ScreenFormatCombo";
-            ScreenFormatCombo.Size = new Size(121, 23);
-            ScreenFormatCombo.TabIndex = 6;
-            ScreenFormatCombo.TabStop = false;
-            ScreenFormatCombo.SelectedIndexChanged += ScreenFormatCombo_SelectedIndexChanged;
-            // 
-            // rbPanel
-            // 
-            rbPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            rbPanel.BackColor = Color.Transparent;
-            rbPanel.CausesValidation = false;
-            rbPanel.Controls.Add(rbGreen);
-            rbPanel.Controls.Add(rbColor);
-            rbPanel.Controls.Add(rbBlue);
-            rbPanel.Controls.Add(rbAmber);
-            rbPanel.Controls.Add(rbWhite);
-            rbPanel.Location = new Point(3, 3);
-            rbPanel.Name = "rbPanel";
-            rbPanel.Size = new Size(158, 96);
-            rbPanel.TabIndex = 5;
-            // 
-            // rbGreen
-            // 
-            rbGreen.AutoSize = true;
-            rbGreen.ForeColor = Color.LimeGreen;
-            rbGreen.Location = new Point(0, 7);
-            rbGreen.Name = "rbGreen";
-            rbGreen.Size = new Size(56, 19);
-            rbGreen.TabIndex = 0;
-            rbGreen.Text = "Green";
-            rbGreen.UseVisualStyleBackColor = true;
-            rbGreen.CheckedChanged += rbGreen_CheckedChanged;
-            // 
-            // rbColor
-            // 
-            rbColor.AutoSize = true;
-            rbColor.Location = new Point(0, 57);
-            rbColor.Name = "rbColor";
-            rbColor.Size = new Size(54, 19);
-            rbColor.TabIndex = 4;
-            rbColor.Text = "Color";
-            rbColor.UseVisualStyleBackColor = true;
-            rbColor.CheckedChanged += rbColor_CheckedChanged;
-            // 
-            // rbBlue
-            // 
-            rbBlue.AutoSize = true;
-            rbBlue.ForeColor = Color.Blue;
-            rbBlue.Location = new Point(78, 32);
-            rbBlue.Name = "rbBlue";
-            rbBlue.Size = new Size(48, 19);
-            rbBlue.TabIndex = 1;
-            rbBlue.Text = "Blue";
-            rbBlue.UseVisualStyleBackColor = true;
-            rbBlue.CheckedChanged += rbBlue_CheckedChanged;
-            // 
-            // rbAmber
-            // 
-            rbAmber.AutoSize = true;
-            rbAmber.ForeColor = Color.DarkOrange;
-            rbAmber.Location = new Point(78, 7);
-            rbAmber.Name = "rbAmber";
-            rbAmber.Size = new Size(61, 19);
-            rbAmber.TabIndex = 3;
-            rbAmber.Text = "Amber";
-            rbAmber.UseVisualStyleBackColor = true;
-            rbAmber.CheckedChanged += rbAmber_CheckedChanged;
-            // 
-            // rbWhite
-            // 
-            rbWhite.AutoSize = true;
-            rbWhite.ForeColor = Color.White;
-            rbWhite.Location = new Point(0, 32);
-            rbWhite.Name = "rbWhite";
-            rbWhite.Size = new Size(56, 19);
-            rbWhite.TabIndex = 2;
-            rbWhite.Text = "White";
-            rbWhite.UseVisualStyleBackColor = true;
-            rbWhite.CheckedChanged += rbWhite_CheckedChanged;
             // 
             // StatusLine
             // 
@@ -300,15 +54,15 @@ namespace PT200EmulatorWinforms
             StatusLine.BackColor = Color.LimeGreen;
             StatusLine.Font = new Font("Consolas", 10F);
             StatusLine.Items.AddRange(new ToolStripItem[] { messageLabel, logLabel, onlineLabel, dsrLabel, systemLabel, g0g1Label, insertLabel, scrollLockLabel, capsLockLabel, numLockLabel, clockLabel });
-            StatusLine.Location = new Point(180, 428);
+            StatusLine.Location = new Point(0, 327);
             StatusLine.Name = "StatusLine";
-            StatusLine.Size = new Size(620, 22);
+            StatusLine.Size = new Size(800, 22);
             StatusLine.TabIndex = 1;
             // 
             // messageLabel
             // 
             messageLabel.Name = "messageLabel";
-            messageLabel.Size = new Size(125, 17);
+            messageLabel.Size = new Size(305, 17);
             messageLabel.Spring = true;
             messageLabel.Text = "Ready...";
             messageLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -386,10 +140,8 @@ namespace PT200EmulatorWinforms
             // layoutPanel
             // 
             layoutPanel.BackColor = Color.Black;
-            layoutPanel.ColumnCount = 2;
-            layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 180F));
-            layoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            layoutPanel.Controls.Add(SidePanel, 0, 0);
+            layoutPanel.ColumnCount = 1;
+            layoutPanel.ColumnStyles.Add(new ColumnStyle());
             layoutPanel.Controls.Add(StatusLine, 1, 1);
             layoutPanel.Dock = DockStyle.Fill;
             layoutPanel.Location = new Point(0, 0);
@@ -398,21 +150,17 @@ namespace PT200EmulatorWinforms
             layoutPanel.RowCount = 2;
             layoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             layoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
-            layoutPanel.Size = new Size(800, 450);
+            layoutPanel.Size = new Size(543, 349);
             layoutPanel.TabIndex = 3;
             // 
             // PT200
             // 
             AutoScaleMode = AutoScaleMode.None;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(543, 349);
             Controls.Add(layoutPanel);
             Name = "PT200";
             Text = "PT200";
-            SidePanel.ResumeLayout(false);
-            SidePanel.PerformLayout();
-            rbPanel.ResumeLayout(false);
-            rbPanel.PerformLayout();
             StatusLine.ResumeLayout(false);
             StatusLine.PerformLayout();
             layoutPanel.ResumeLayout(false);
@@ -420,36 +168,18 @@ namespace PT200EmulatorWinforms
         }
 
         #endregion
-        private Panel SidePanel;
-        private RadioButton rbGreen;
-        private RadioButton rbBlue;
-        private RadioButton rbColor;
-        private RadioButton rbAmber;
-        private RadioButton rbWhite;
-        private Panel rbPanel;
-        private ComboBox LogLevelCombo;
-        private ComboBox ScreenFormatCombo;
-        private TextBox PortTextBox;
-        private TextBox HostTextBox;
-        private StatusStrip StatusLine;
-        private ToolStripStatusLabel messageLabel;
-        private ToolStripStatusLabel onlineLabel;
-        private ToolStripStatusLabel dsrLabel;
-        private ToolStripStatusLabel systemLabel;
-        private ToolStripStatusLabel g0g1Label;
-        private ToolStripStatusLabel scrollLockLabel;
-        private ToolStripStatusLabel insertLabel;
-        private ToolStripStatusLabel capsLockLabel;
-        private ToolStripStatusLabel numLockLabel;
-        private ToolStripStatusLabel clockLabel;
-        private ToolStripStatusLabel logLabel;
-        private Button DiagButton;
-        private Button DisconnectButton;
-        private Button ConnectButton;
-        private TableLayoutPanel layoutPanel;
-        private Button FullRedrawButton;
-        private Button ReconnectButton;
-        private ComboBox cursorStyleCombo;
-        private CheckBox BlinkBox;
+        internal StatusStrip StatusLine;
+        internal ToolStripStatusLabel messageLabel;
+        internal ToolStripStatusLabel onlineLabel;
+        internal ToolStripStatusLabel dsrLabel;
+        internal ToolStripStatusLabel systemLabel;
+        internal ToolStripStatusLabel g0g1Label;
+        internal ToolStripStatusLabel scrollLockLabel;
+        internal ToolStripStatusLabel insertLabel;
+        internal ToolStripStatusLabel capsLockLabel;
+        internal ToolStripStatusLabel numLockLabel;
+        internal ToolStripStatusLabel clockLabel;
+        internal ToolStripStatusLabel logLabel;
+        internal TableLayoutPanel layoutPanel;
     }
 }

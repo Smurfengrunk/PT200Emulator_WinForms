@@ -10,7 +10,7 @@ using PT200_Rendering;
 
 using Serilog.Events;
 
-namespace PT200EmulatorWinforms.Engine
+namespace PT200EmulatorWinForms.Engine
 {
     /// <summary>
     /// Main class for configuration purposes
